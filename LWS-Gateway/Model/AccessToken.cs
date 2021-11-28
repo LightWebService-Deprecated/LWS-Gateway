@@ -1,3 +1,7 @@
+using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace LWS_Gateway.Model
 {
     public class AccessToken

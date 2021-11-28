@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+using LWS_Gateway.Configuration;
+using LWS_Gateway.Filter;
 using LWS_Gateway.Middleware;
+using LWS_Gateway.Repository;
+using LWS_Gateway.Service;
 using LWS_Gateway.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace LWS_Gateway
@@ -30,7 +27,14 @@ namespace LWS_Gateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            // MongoDB Configuration
+            services.AddSingleton(Configuration.GetSection("MongoConfiguration").Get<MongoConfiguration>());
+            
+            services.AddSingleton<MongoContext>();
+            services.AddSingleton<IAccountRepository, AccountRepository>();
+            services.AddSingleton<UserService>();
+            
+            services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "LWS_Gateway", Version = "v1"});

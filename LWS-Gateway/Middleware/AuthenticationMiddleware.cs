@@ -1,14 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Api;
-using Grpc.Net.Client;
-using LWS_Authentication;
-using LWS_Gateway.Model;
-using LWS_Shared;
+using LWS_Gateway.Model.Request;
+using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace LWS_Gateway.Middleware
 {
@@ -16,13 +11,12 @@ namespace LWS_Gateway.Middleware
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _requestDelegate;
-        private readonly AuthenticationRpc.AuthenticationRpcClient _authenticationClient;
+        private readonly UserService _userService;
 
-        public AuthenticationMiddleware(RequestDelegate requestDelegate, IConfiguration configuration)
+        public AuthenticationMiddleware(RequestDelegate requestDelegate, UserService userService)
         {
             _requestDelegate = requestDelegate;
-            var grpcChannel = GrpcChannel.ForAddress(configuration.GetConnectionString("AuthenticationServer"));
-            _authenticationClient = new AuthenticationRpc.AuthenticationRpcClient(grpcChannel);
+            _userService = userService;
         }
 
         public async Task Invoke(HttpContext context)
@@ -32,14 +26,12 @@ namespace LWS_Gateway.Middleware
             if (userToken != null)
             {
                 // Authenticate from Authentication Service
-                var result = await _authenticationClient.AuthenticateUserRequestAsync(new AuthenticateUserMessage
-                    {UserToken = userToken});
-            
-                // If result is success
-                if (result?.ResultCode == ResultCode.Success)
+                var accountEntity =
+                    await _userService.AuthenticateUserRequest(new AuthenticationRequest {UserToken = userToken});
+
+                if (accountEntity != null)
                 {
-                    var accountInfo = JsonConvert.DeserializeObject<AccountProjection>(result.Content);
-                    if (accountInfo != null) context.Items["userEmail"] = accountInfo.UserEmail;
+                    context.Items["userEmail"] = accountEntity.UserEmail;
                 }
             }
             
