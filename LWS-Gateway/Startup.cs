@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using LWS_Gateway.Configuration;
 using LWS_Gateway.Filter;
-using LWS_Gateway.Management.Repository;
-using LWS_Gateway.Management.Service;
 using LWS_Gateway.Middleware;
 using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
@@ -32,17 +30,10 @@ namespace LWS_Gateway
             // MongoDB Configuration
             services.AddSingleton(Configuration.GetSection("MongoConfiguration").Get<MongoConfiguration>());
             
-            // User Related
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddSingleton<UserService>();
             
-            // Admin
-            services.AddHttpClient();
-            services.AddScoped<INodeRepository, NodeRepository>();
-            services.AddScoped<NodeManageService>();
-            services.AddHostedService<NodeHealthCheckService>();
-
             services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());
             services.AddSwaggerGen(c =>
             {
