@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace LWS_Gateway.Repository
 {
@@ -92,11 +94,15 @@ namespace LWS_Gateway.Repository
 
         public async Task<Account> AuthenticateUserAsync(string userToken)
         {
-            var findOption = Builders<Account>.Filter.And(
-                Builders<Account>.Filter.Eq("userAccessTokens.Token", userToken),
-                Builders<Account>.Filter.Gte("userAccessTokens.ExpiresAt", DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
+            var accountQueryable = _accountCollection.AsQueryable();
 
-            return await (await _accountCollection.FindAsync(findOption)).FirstOrDefaultAsync();
+            var targetAccount = await accountQueryable.Where(a =>
+                    a.UserAccessTokens.Any(a =>
+                        a.Token == userToken && a.ExpiresAt >= DateTimeOffset.UtcNow.ToUnixTimeSeconds() &&
+                        a.IsExpiredExternally != true))
+                .FirstOrDefaultAsync();
+
+            return targetAccount;
         }
 
         public async Task DropoutUserAsync(string userEmail)
