@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using LWS_Gateway.Extension;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +32,8 @@ namespace LWS_Gateway.Middleware
 
                 if (accountEntity != null)
                 {
-                    context.Items["userEmail"] = accountEntity.UserEmail;
+                    context.SetUserEmail(accountEntity.UserEmail);
+                    context.SetUserRole(accountEntity.AccountRoles);
                 }
             }
             

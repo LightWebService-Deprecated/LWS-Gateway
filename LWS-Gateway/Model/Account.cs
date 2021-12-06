@@ -35,6 +35,8 @@ namespace LWS_Gateway.Model
         [BsonElement("userAccessTokens")]
         public List<AccessToken> UserAccessTokens { get; set; }
 
+        public HashSet<AccountRole> AccountRoles { get; set; } = new() {AccountRole.User};
+
         public AccountProjection ToProjection() => new AccountProjection
         {
             UserEmail = this.UserEmail

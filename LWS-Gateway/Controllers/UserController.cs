@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using LWS_Gateway.Attribute;
+using LWS_Gateway.Extension;
+using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +34,10 @@ namespace LWS_Gateway.Controllers
         }
 
         [HttpDelete]
-        [AuthenticationNeeded]
+        [AuthenticationNeeded(TargetRole = AccountRole.User)]
         public async Task<IActionResult> DropoutUser()
         {
-            await _userService.DropoutUserRequest(HttpContext.Items["userEmail"]!.ToString());
+            await _userService.DropoutUserRequest(HttpContext.GetUserEmail());
 
             return Ok();
         }
