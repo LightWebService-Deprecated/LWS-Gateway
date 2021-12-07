@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using LWS_Gateway.Configuration;
 using LWS_Gateway.Filter;
+using LWS_Gateway.Kube;
 using LWS_Gateway.Middleware;
 using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
@@ -33,6 +34,8 @@ namespace LWS_Gateway
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddSingleton<UserService>();
+            services.AddScoped<KubernetesService>();
+            services.AddSingleton<ServiceDeploymentProvider>();
             
             services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());
             services.AddSwaggerGen(c =>

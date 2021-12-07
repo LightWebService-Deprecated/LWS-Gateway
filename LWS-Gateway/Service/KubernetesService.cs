@@ -1,60 +1,37 @@
-using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using k8s;
-using k8s.Models;
+using LWS_Gateway.Kube;
+using LWS_Gateway.Model.Deployment;
+using Microsoft.Extensions.Configuration;
 
 namespace LWS_Gateway.Service;
 
 public class KubernetesService
 {
     private readonly IKubernetes _client;
+    private readonly ServiceDeploymentProvider _serviceDeploymentProvider;
 
-    public KubernetesService()
+    public KubernetesService(IConfiguration configuration, ServiceDeploymentProvider deploymentProvider)
     {
-        var config = KubernetesClientConfiguration.BuildConfigFromConfigFile();
+        var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(configuration["KubePath"]);
         _client = new Kubernetes(config);
+
+        _serviceDeploymentProvider = deploymentProvider;
     }
 
-    private V1Container UbuntuSshdContainer => new()
+    public async Task<DeploymentDefinition> CreateDeployment(string userId, DeploymentType deploymentType)
     {
-        Image = "kangdroid/multiarch-sshd",
-        Name = $"UBUNTU_SSHD_KDR/{Guid.NewGuid().ToString()}",
-        Ports = new List<V1ContainerPort>
-        {
-            new(containerPort: 22, protocol: "TCP")
-        }
-    };
-
-    public void CreateUbuntuDeployment(string userId)
-    {
-        var deploymentLabel = $"{userId}/deployment/ubuntu/{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-        var deploymentPodLabel = new Dictionary<string, string>
-        {
-            ["name"] = $"{userId}/ubuntu/pods-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"
-        };
+        var serviceDeployment = _serviceDeploymentProvider.SelectCorrectDeployment(deploymentType, _client);
+        var definition = await serviceDeployment.CreateDeployment(userId);
         
-        var deployment = new V1Deployment
-        {
-            Metadata = new V1ObjectMeta
-            {
-                Labels = new Dictionary<string, string>
-                {
-                    ["deploymentIdentifier"] = deploymentLabel
-                }
-            },
-            Spec = new V1DeploymentSpec
-            {
-                Replicas = 1,
-                Selector = new V1LabelSelector { MatchLabels = deploymentPodLabel },
-                Template = new V1PodTemplateSpec
-                {
-                    Metadata = new V1ObjectMeta { Labels = deploymentPodLabel },
-                    Spec = new V1PodSpec
-                    {
-                        Containers = new List<V1Container> { UbuntuSshdContainer }
-                    }
-                }
-            }
-        };
+        // TODO: Save definition to user-deployment database.
+
+        return definition;
+    }
+
+    public async Task DeleteDeployment(string userId, string deploymentName)
+    {
+        var serviceDeployment = _serviceDeploymentProvider.CreateUbuntuDeployment(_client);
+        await serviceDeployment.RemoveDeploymentByName(userId, deploymentName);
     }
 }

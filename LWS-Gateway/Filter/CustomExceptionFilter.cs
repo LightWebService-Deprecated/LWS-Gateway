@@ -1,12 +1,31 @@
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using LWS_Gateway.CustomException;
 using LWS_Gateway.Model.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Rest;
 
 namespace LWS_Gateway.Filter
 {
+    public class RawJsonToObjectResult : IActionResult
+    {
+        public string JsonString { get; set; }
+        public int StatusCode { get; set; }
+        
+        public async Task ExecuteResultAsync(ActionContext context)
+        {
+            context.HttpContext.Response.StatusCode = StatusCode;
+            context.HttpContext.Response.ContentType = "application/json; charset=utf-8";
+            await using var streamWriter = new StreamWriter(context.HttpContext.Response.Body, Encoding.UTF8);
+            await streamWriter.WriteAsync(JsonString);
+            await streamWriter.FlushAsync();
+        }
+    }
+    
     [ExcludeFromCodeCoverage]
     public class CustomExceptionFilter: IExceptionFilter
     {
@@ -19,6 +38,15 @@ namespace LWS_Gateway.Filter
                 context.Result = new ObjectResult(errorResponse)
                 {
                     StatusCode = errorResponse.StatusCodes
+                };
+            } 
+            else if (context.Exception is HttpOperationException)
+            {
+                var correctException = context.Exception as HttpOperationException;
+                context.Result = new RawJsonToObjectResult
+                {
+                    JsonString = correctException.Response.Content,
+                    StatusCode = (int)correctException.Response.StatusCode
                 };
             }
             else

@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <RootNamespace>LWS_Gateway</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <LangVersion>10</LangVersion>
-    </PropertyGroup>
+      <UserSecretsId>12c8c01c-6e1f-4d4e-9cbf-c642f97ca712</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="KubernetesClient" Version="6.0.26" />
