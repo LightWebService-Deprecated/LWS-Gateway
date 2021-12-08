@@ -12,12 +12,12 @@ namespace LWS_Gateway.Middleware
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _requestDelegate;
-        private readonly UserService _userService;
+        private readonly AuthenticationService _authenticationService;
 
-        public AuthenticationMiddleware(RequestDelegate requestDelegate, UserService userService)
+        public AuthenticationMiddleware(RequestDelegate requestDelegate, AuthenticationService authentication)
         {
             _requestDelegate = requestDelegate;
-            _userService = userService;
+            _authenticationService = authentication;
         }
 
         public async Task Invoke(HttpContext context)
@@ -28,11 +28,11 @@ namespace LWS_Gateway.Middleware
             {
                 // Authenticate from Authentication Service
                 var accountEntity =
-                    await _userService.AuthenticateUserRequest(new AuthenticationRequest {UserToken = userToken});
+                    await _authenticationService.AuthenticateUserRequest(new AuthenticationRequest {UserToken = userToken});
 
                 if (accountEntity != null)
                 {
-                    context.SetUserEmail(accountEntity.UserEmail);
+                    context.SetUserId(accountEntity.Id);
                     context.SetUserRole(accountEntity.AccountRoles);
                 }
             }

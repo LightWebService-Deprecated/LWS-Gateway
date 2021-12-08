@@ -33,7 +33,8 @@ namespace LWS_Gateway
             
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
-            services.AddSingleton<UserService>();
+            services.AddSingleton<AuthenticationService>();
+            services.AddScoped<UserService>();
             services.AddScoped<KubernetesService>();
             services.AddSingleton<ServiceDeploymentProvider>();
             

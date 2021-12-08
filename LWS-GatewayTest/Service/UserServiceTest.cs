@@ -6,7 +6,6 @@ using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Driver;
 using Moq;
@@ -23,7 +22,7 @@ public class UserServiceTest
     {
         _mockAccountRepository = new Mock<IAccountRepository>();
 
-        _userService = new UserService(NullLogger<AuthenticationService>.Instance, _mockAccountRepository.Object);
+        _userService = new UserService(NullLogger<UserService>.Instance, _mockAccountRepository.Object);
     }
     
     private MongoWriteException CreateMongoException(ServerErrorCategory category)
@@ -147,45 +146,6 @@ public class UserServiceTest
         // Check
         Assert.NotNull(accessToken);
         _mockAccountRepository.Verify(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
-    }
-
-    [Fact(DisplayName =
-        "AuthenticateUserRequest: AuthenticateUserRequest should find appropriate account information.")]
-    public async void Is_AuthenticateUserRequest_Returns_Correct_Account()
-    {
-        // Let
-        var authenticationRequest = new AuthenticationRequest
-        {
-            UserToken = "test"
-        };
-        _mockAccountRepository.Setup(a => a.AuthenticateUserAsync(authenticationRequest.UserToken))
-            .ReturnsAsync(new Account());
-        
-        // Do
-        var result = await _userService.AuthenticateUserRequest(authenticationRequest);
-        
-        // Check
-        _mockAccountRepository.Verify(a => a.AuthenticateUserAsync(authenticationRequest.UserToken));
-        Assert.NotNull(result);
-    }
-
-    [Fact(DisplayName = "AuthenticateUserRequest: AuthenticateUserRequest should return null when verification fails.")]
-    public async void Is_AuthenticateUserRequest_Returns_Null_When_Verification_Fails()
-    {
-        // Let
-        var authenticationRequest = new AuthenticationRequest
-        {
-            UserToken = "test"
-        };
-        _mockAccountRepository.Setup(a => a.AuthenticateUserAsync(authenticationRequest.UserToken))
-            .ReturnsAsync(value: null);
-        
-        // Do
-        var result = await _userService.AuthenticateUserRequest(authenticationRequest);
-        
-        // Check
-        _mockAccountRepository.Verify(a => a.AuthenticateUserAsync(authenticationRequest.UserToken));
-        Assert.Null(result);
     }
 
     [Fact(DisplayName = "DropoutUserRequest: DropoutUserRequest should remove user well.")]

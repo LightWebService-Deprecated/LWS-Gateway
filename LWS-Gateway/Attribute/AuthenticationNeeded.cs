@@ -15,7 +15,7 @@ namespace LWS_Gateway.Attribute
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var httpContext = context.HttpContext;
-            if (!httpContext.IsUserEmailExists())
+            if (!httpContext.IsUserIdExists())
             {
                 context.Result = new UnauthorizedObjectResult(
                     new

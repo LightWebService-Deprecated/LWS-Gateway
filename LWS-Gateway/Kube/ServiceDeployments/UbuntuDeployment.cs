@@ -11,7 +11,6 @@ namespace LWS_Gateway.Kube.ServiceDeployments;
 public class UbuntuDeployment: IServiceDeployment
 {
     private const int SshPort = 22;
-    private const string NameSpace = "default";
     private readonly IKubernetes _kubernetesClient;
 
     public UbuntuDeployment(IKubernetes kubernetes)
@@ -75,7 +74,7 @@ public class UbuntuDeployment: IServiceDeployment
     public async Task<DeploymentDefinition> CreateDeployment(string userId)
     {
         var deployment = CreateUbuntuDeploymentObject(userId);
-        await _kubernetesClient.CreateNamespacedDeploymentWithHttpMessagesAsync(deployment, NameSpace);
+        await _kubernetesClient.CreateNamespacedDeploymentWithHttpMessagesAsync(deployment, userId);
         
         return new DeploymentDefinition
         {
@@ -87,7 +86,7 @@ public class UbuntuDeployment: IServiceDeployment
 
     public async Task RemoveDeploymentByName(string userId, string deploymentName)
     {
-        await _kubernetesClient.DeleteNamespacedDeploymentAsync(deploymentName, NameSpace);
+        await _kubernetesClient.DeleteNamespacedDeploymentAsync(deploymentName, userId);
     }
 
     public async Task RemoveDeploymentByDefinition(string userId, DeploymentDefinition definition)

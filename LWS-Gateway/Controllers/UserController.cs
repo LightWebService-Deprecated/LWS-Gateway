@@ -37,7 +37,7 @@ namespace LWS_Gateway.Controllers
         [AuthenticationNeeded(TargetRole = AccountRole.User)]
         public async Task<IActionResult> DropoutUser()
         {
-            await _userService.DropoutUserRequest(HttpContext.GetUserEmail());
+            await _userService.DropoutUserRequest(HttpContext.GetUserId());
 
             return Ok();
         }

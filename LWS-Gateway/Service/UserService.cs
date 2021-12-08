@@ -6,7 +6,6 @@ using LWS_Gateway.CustomException;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
@@ -19,7 +18,7 @@ namespace LWS_Gateway.Service
         private readonly IAccountRepository _accountRepository;
         private readonly KubernetesService _kubernetesService;
 
-        public UserService(ILogger<AuthenticationService> logger, IAccountRepository repository, KubernetesService kubernetesService)
+        public UserService(ILogger<UserService> logger, IAccountRepository repository, KubernetesService kubernetesService)
         {
             _logger = logger;
             _accountRepository = repository;
@@ -50,11 +49,6 @@ namespace LWS_Gateway.Service
             await _accountRepository.SaveAccessTokenAsync(loginResult.UserEmail, accessToken);
 
             return accessToken;
-        }
-
-        public async Task<Account> AuthenticateUserRequest(AuthenticationRequest request)
-        {
-            return await _accountRepository.AuthenticateUserAsync(request.UserToken);
         }
 
         public async Task DropoutUserRequest(string userId)
