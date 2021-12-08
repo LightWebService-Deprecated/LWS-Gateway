@@ -17,18 +17,21 @@ namespace LWS_Gateway.Service
     {
         private readonly ILogger _logger;
         private readonly IAccountRepository _accountRepository;
+        private readonly KubernetesService _kubernetesService;
 
-        public UserService(ILogger<AuthenticationService> logger, IAccountRepository repository)
+        public UserService(ILogger<AuthenticationService> logger, IAccountRepository repository, KubernetesService kubernetesService)
         {
             _logger = logger;
             _accountRepository = repository;
+            _kubernetesService = kubernetesService;
         }
 
         public async Task RegisterRequest(RegisterRequest request)
         {
             try
             {
-                await _accountRepository.CreateAccountAsync(request);
+                var user = await _accountRepository.CreateAccountAsync(request);
+                await _kubernetesService.CreateNameSpace(user.Id);
             }
             catch (Exception e)
             {
@@ -54,9 +57,10 @@ namespace LWS_Gateway.Service
             return await _accountRepository.AuthenticateUserAsync(request.UserToken);
         }
 
-        public async Task DropoutUserRequest(string userEmail)
+        public async Task DropoutUserRequest(string userId)
         {
-            await _accountRepository.DropoutUserAsync(userEmail);
+            await _accountRepository.DropoutUserAsync(userId);
+            await _kubernetesService.DeleteNameSpace(userId);
         }
 
         private AccessToken CreateAccessToken(Account account)

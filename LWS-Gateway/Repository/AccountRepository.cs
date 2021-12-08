@@ -17,7 +17,7 @@ namespace LWS_Gateway.Repository
         /// </summary>
         /// <param name="message">Request Message from client.</param>
         /// <returns>None</returns>
-        public Task CreateAccountAsync(RegisterRequest message);
+        public Task<Account> CreateAccountAsync(RegisterRequest message);
 
         /// <summary>
         /// Try authenticating user with received email/password.
@@ -46,7 +46,7 @@ namespace LWS_Gateway.Repository
         /// </summary>
         /// <param name="userEmail">User Identifier</param>
         /// <returns>None.</returns>
-        public Task DropoutUserAsync(string userEmail);
+        public Task DropoutUserAsync(string userId);
     }
     
     public class AccountRepository: IAccountRepository
@@ -62,14 +62,17 @@ namespace LWS_Gateway.Repository
                     new CreateIndexOptions {Unique = true}));
         }
 
-        public async Task CreateAccountAsync(RegisterRequest message)
+        public async Task<Account> CreateAccountAsync(RegisterRequest message)
         {
-            await _accountCollection.InsertOneAsync(new Account
+            var account = new Account
             {
                 UserEmail = message.UserEmail,
                 UserPassword = message.UserPassword,
                 UserAccessTokens = new List<AccessToken>()
-            });
+            };
+            await _accountCollection.InsertOneAsync(account);
+
+            return account;
         }
 
         public async Task<Account> LoginAccountAsync(LoginRequest message)
@@ -105,9 +108,9 @@ namespace LWS_Gateway.Repository
             return targetAccount;
         }
 
-        public async Task DropoutUserAsync(string userEmail)
+        public async Task DropoutUserAsync(string userId)
         {
-            var filter = Builders<Account>.Filter.Eq(a => a.UserEmail, userEmail);
+            var filter = Builders<Account>.Filter.Eq(a => a.Id, userId);
 
             await _accountCollection.DeleteOneAsync(filter);
         }

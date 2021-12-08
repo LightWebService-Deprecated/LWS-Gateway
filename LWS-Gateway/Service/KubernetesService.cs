@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using k8s;
+using k8s.Models;
 using LWS_Gateway.Kube;
 using LWS_Gateway.Model.Deployment;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,24 @@ public class KubernetesService
         _client = new Kubernetes(config);
 
         _serviceDeploymentProvider = deploymentProvider;
+    }
+
+    public async Task CreateNameSpace(string userId)
+    {
+        var body = new V1Namespace
+        {
+            Metadata = new V1ObjectMeta
+            {
+                Name = userId
+            }
+        };
+
+        await _client.CreateNamespaceWithHttpMessagesAsync(body);
+    }
+
+    public async Task DeleteNameSpace(string userId)
+    {
+        await _client.DeleteNamespaceWithHttpMessagesAsync(userId);
     }
 
     public async Task<DeploymentDefinition> CreateDeployment(string userId, DeploymentType deploymentType)
