@@ -28,4 +28,10 @@
       <ProjectReference Include="..\LWS-Gateway\LWS-Gateway.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="allureConfig.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

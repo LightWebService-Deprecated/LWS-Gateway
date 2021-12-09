@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Allure.Xunit.Attributes;
 using LWS_Gateway.Configuration;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
@@ -11,6 +12,7 @@ using Xunit;
 namespace LWS_GatewayTest.Repository;
 
 [Collection("DockerIntegration")]
+[AllureSuite("Account Model Repository Test Suite")]
 public class AccountRepositoryTest
 {
     private readonly IAccountRepository _accountRepository;
@@ -28,7 +30,8 @@ public class AccountRepositoryTest
         _accountRepository = new AccountRepository(mongoContext);
     }
 
-    [Fact(DisplayName = "CreateAccountAsync: CreateAccountAsync should insert document well.")]
+    [AllureSubSuite("Account Creation(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName = "CreateAccountAsync: CreateAccountAsync should insert document well.")]
     public async void Is_CreateAccountAsync_Inserts_Document_Well()
     {
         // Let
@@ -49,7 +52,8 @@ public class AccountRepositoryTest
         Assert.Equal(registerRequest.UserPassword, list[0].UserPassword);
     }
 
-    [Fact(DisplayName =
+    [AllureSubSuite("Account Creation(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName =
         "CreateAccountAsync: CreateAccountAsync should throw MongoException when duplicated key found.")]
     public async void Is_CreateAccountAsync_Throws_MongoException_When_DuplicatedKey_Found()
     {
@@ -65,7 +69,8 @@ public class AccountRepositoryTest
         await Assert.ThrowsAnyAsync<MongoWriteException>(() => _accountRepository.CreateAccountAsync(registerRequest));
     }
 
-    [Fact(DisplayName = "LoginAccountAsync: LoginAccountAsync should return null when credential is not found.")]
+    [AllureSubSuite("Account Login(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName = "LoginAccountAsync: LoginAccountAsync should return null when credential is not found.")]
     public async void Is_LoginAccountAsync_Returns_Null_When_Credential_Is_Not_Found()
     {
         // Let
@@ -82,7 +87,8 @@ public class AccountRepositoryTest
         Assert.Null(result);
     }
 
-    [Fact(DisplayName =
+    [AllureSubSuite("Account Login(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName =
         "LoginAccountAsync: LoginAccountAsync should return account information when credential is correct.")]
     public async void Is_LoginAccountAsync_Returns_Account_Information_When_Credential_Correct()
     {
@@ -107,7 +113,8 @@ public class AccountRepositoryTest
         Assert.Equal(account.UserEmail, result.UserEmail);
     }
 
-    [Fact(DisplayName = "SaveAccessTokenAsync: SaveAccessTokenAsync should add access token to database well.")]
+    [AllureSubSuite("Access Token Manipulation(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName = "SaveAccessTokenAsync: SaveAccessTokenAsync should add access token to database well.")]
     public async void Is_SaveAccessTokenAsync_Saves_Token_To_Database_Well()
     {
         // Let
@@ -140,7 +147,8 @@ public class AccountRepositoryTest
         Assert.Equal(accessToken.Token, userList[0].UserAccessTokens[0].Token);
     }
 
-    [Fact(DisplayName =
+    [AllureSubSuite("Authentication(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName =
         "AuthenticateUserAsync: AuthenticateUserAsync should return null when corresponding user is not found.")]
     public async void Is_AuthenticateUserAsync_Returns_Null_When_Not_Found()
     {
@@ -152,7 +160,8 @@ public class AccountRepositoryTest
         Assert.Null(result);
     }
 
-    [Fact(DisplayName =
+    [AllureSubSuite("Authentication(DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName =
         "AuthenticateUserAsync: AuthenticateUserAsync should return account information when token is actually found.")]
     public async void Is_AuthenticateUserAsync_Works_Well()
     {
@@ -181,7 +190,8 @@ public class AccountRepositoryTest
         Assert.Equal(account.UserEmail, result.UserEmail);
     }
 
-    [Fact(DisplayName = "DropoutUserAsync: DropoutUserAsync should remove user well.")]
+    [AllureSubSuite("Dropout(Removal, DB Site) Test Sub Suite")]
+    [AllureXunit(DisplayName = "DropoutUserAsync: DropoutUserAsync should remove user well.")]
     public async void Is_DropoutUserAsync_Removes_User_Well()
     {
         // Let

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Allure.Xunit.Attributes;
 using LWS_Gateway.CustomException;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
@@ -13,6 +14,7 @@ using Xunit;
 
 namespace LWS_GatewayTest.Service;
 
+[AllureSuite("User(Account) Management Suite")]
 public class UserServiceTest
 {
     private readonly UserService _userService;
@@ -41,7 +43,8 @@ public class UserServiceTest
         return exceptionInfo;
     }
 
-    [Fact(DisplayName = "RegisterRequest: RegisterRequest should handle conflict exception when occurred.")]
+    [AllureSubSuite("Account Management: Register Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "RegisterRequest: RegisterRequest should handle conflict exception when occurred.")]
     public async void Is_RegisterRequest_Handles_Conflict_Exception()
     {
         // Let
@@ -57,7 +60,8 @@ public class UserServiceTest
         await Assert.ThrowsAsync<ApiServerException>(() => _userService.RegisterRequest(registerRequest));
     }
     
-    [Fact(DisplayName = "RegisterRequest: RegisterRequest should handle Other Mongo exception when occurred.")]
+    [AllureSubSuite("Account Management: Register Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "RegisterRequest: RegisterRequest should handle Other Mongo exception when occurred.")]
     public async void Is_RegisterRequest_Handles_Other_Mongo_Exception()
     {
         // Let
@@ -73,7 +77,8 @@ public class UserServiceTest
         await Assert.ThrowsAsync<ApiServerException>(() => _userService.RegisterRequest(registerRequest));
     }
     
-    [Fact(DisplayName = "RegisterRequest: RegisterRequest should handle Other exception when occurred.")]
+    [AllureSubSuite("Account Management: Register Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "RegisterRequest: RegisterRequest should handle Other exception when occurred.")]
     public async void Is_RegisterRequest_Handles_Other_Exception()
     {
         // Let
@@ -89,7 +94,8 @@ public class UserServiceTest
         await Assert.ThrowsAsync<ApiServerException>(() => _userService.RegisterRequest(registerRequest));
     }
 
-    [Fact(DisplayName = "RegisterRequest: RegisterRequest should work well.")]
+    [AllureSubSuite("Account Management: Register Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "RegisterRequest: RegisterRequest should work well.")]
     public async void Is_RegisterRequest_Works_Well()
     {
         // Let
@@ -117,7 +123,8 @@ public class UserServiceTest
         _mockKubernetesService.Verify(a => a.CreateNameSpace(It.IsAny<string>()));
     }
 
-    [Fact(DisplayName = "LoginRequest should throw ApiServerException when login credential is incorrect.")]
+    [AllureSubSuite("Account Management: Login Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "LoginRequest should throw ApiServerException when login credential is incorrect.")]
     public async void Is_LoginRequest_Throws_ApiServerException_When_Login_Credential_Is_Incorrect()
     {
         // Let
@@ -133,7 +140,8 @@ public class UserServiceTest
         await Assert.ThrowsAsync<ApiServerException>(() => _userService.LoginRequest(loginRequest));
     }
 
-    [Fact(DisplayName = "LoginRequest: LoginRequest should return access token if login succeeds.")]
+    [AllureSubSuite("Account Management: Login Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "LoginRequest: LoginRequest should return access token if login succeeds.")]
     public async void Is_LoginRequest_Works_Well()
     {
         // Let
@@ -160,7 +168,8 @@ public class UserServiceTest
         _mockAccountRepository.Verify(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
     }
 
-    [Fact(DisplayName = "DropoutUserRequest: DropoutUserRequest should remove user well.")]
+    [AllureSubSuite("Account Management: Dropout Site Verification Sub Suite")]
+    [AllureXunit(DisplayName = "DropoutUserRequest: DropoutUserRequest should remove user well.")]
     public async void Is_DropoutUserRequest_Works_Well()
     {
         // Let

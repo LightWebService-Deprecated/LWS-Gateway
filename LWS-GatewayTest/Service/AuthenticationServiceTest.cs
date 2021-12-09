@@ -1,3 +1,4 @@
+using Allure.Xunit.Attributes;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
@@ -7,6 +8,7 @@ using Xunit;
 
 namespace LWS_GatewayTest.Service;
 
+[AllureSuite("Authentication(Middleware Site) Suite")]
 public class AuthenticationServiceTest
 {
     private readonly Mock<IAccountRepository> _mockAccountRepository;
@@ -18,7 +20,8 @@ public class AuthenticationServiceTest
         _authenticationService = new AuthenticationService(_mockAccountRepository.Object);
     }
     
-    [Fact(DisplayName =
+    [AllureSubSuite("User Authentication Request(Middleware) Verification SubSuite")]
+    [AllureXunit(DisplayName =
         "AuthenticateUserRequest: AuthenticateUserRequest should find appropriate account information.")]
     public async void Is_AuthenticateUserRequest_Returns_Correct_Account()
     {
@@ -38,6 +41,7 @@ public class AuthenticationServiceTest
         Assert.NotNull(result);
     }
 
+    [AllureSubSuite("User Authentication Request(Middleware) Verification SubSuite")]
     [Fact(DisplayName = "AuthenticateUserRequest: AuthenticateUserRequest should return null when verification fails.")]
     public async void Is_AuthenticateUserRequest_Returns_Null_When_Verification_Fails()
     {

@@ -1,0 +1,9 @@
+{
+  "allure": {
+    "directory": "allure-results",
+    "allowEmptySuites": true,
+    "enableParameters": true,
+    "cleanResultDirectory": true,
+    "allowLocalHistoryTrend": false
+  }
+}
