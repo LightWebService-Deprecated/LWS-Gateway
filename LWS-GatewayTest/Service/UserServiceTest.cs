@@ -17,12 +17,14 @@ public class UserServiceTest
 {
     private readonly UserService _userService;
     private readonly Mock<IAccountRepository> _mockAccountRepository;
+    private readonly Mock<IKubernetesService> _mockKubernetesService;
 
     public UserServiceTest()
     {
         _mockAccountRepository = new Mock<IAccountRepository>();
+        _mockKubernetesService = new Mock<IKubernetesService>();
 
-        _userService = new UserService(NullLogger<UserService>.Instance, _mockAccountRepository.Object);
+        _userService = new UserService(NullLogger<UserService>.Instance, _mockAccountRepository.Object, _mockKubernetesService.Object);
     }
     
     private MongoWriteException CreateMongoException(ServerErrorCategory category)
@@ -91,18 +93,28 @@ public class UserServiceTest
     public async void Is_RegisterRequest_Works_Well()
     {
         // Let
-        _mockAccountRepository.Setup(a => a.CreateAccountAsync(It.IsAny<RegisterRequest>()));
-        var registerRequest = new RegisterRequest
+        var user = new Account()
         {
+            Id = Guid.NewGuid().ToString(),
             UserEmail = "test",
             UserPassword = "testPassword"
         };
         
+        var registerRequest = new RegisterRequest
+        {
+            UserEmail = user.UserEmail,
+            UserPassword = user.UserPassword
+        };
+        _mockAccountRepository.Setup(a => a.CreateAccountAsync(It.IsAny<RegisterRequest>()))
+            .ReturnsAsync(user);
+        _mockKubernetesService.Setup(a => a.CreateNameSpace(It.IsAny<string>()));
+
         // Do
         await _userService.RegisterRequest(registerRequest);
         
         // Check
         _mockAccountRepository.Verify(a => a.CreateAccountAsync(It.IsAny<RegisterRequest>()));
+        _mockKubernetesService.Verify(a => a.CreateNameSpace(It.IsAny<string>()));
     }
 
     [Fact(DisplayName = "LoginRequest should throw ApiServerException when login credential is incorrect.")]
@@ -152,13 +164,15 @@ public class UserServiceTest
     public async void Is_DropoutUserRequest_Works_Well()
     {
         // Let
-        var userEmail = "test";
-        _mockAccountRepository.Setup(a => a.DropoutUserAsync(userEmail));
+        var userId = "test";
+        _mockAccountRepository.Setup(a => a.DropoutUserAsync(userId));
+        _mockKubernetesService.Setup(a => a.DeleteNameSpace(It.IsAny<string>()));
         
         // Do
-        await _userService.DropoutUserRequest(userEmail);
+        await _userService.DropoutUserRequest(userId);
         
         // Check
-        _mockAccountRepository.Verify((a => a.DropoutUserAsync(userEmail)));
+        _mockAccountRepository.Verify((a => a.DropoutUserAsync(userId)));
+        _mockKubernetesService.Verify(a => a.DeleteNameSpace(It.IsAny<string>()));
     }
 }

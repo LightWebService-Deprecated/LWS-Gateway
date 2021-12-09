@@ -35,7 +35,7 @@ namespace LWS_Gateway
             services.AddSingleton<IAccountRepository, AccountRepository>();
             services.AddSingleton<AuthenticationService>();
             services.AddScoped<UserService>();
-            services.AddScoped<KubernetesService>();
+            services.AddScoped<IKubernetesService, KubernetesService>();
             services.AddSingleton<ServiceDeploymentProvider>();
             
             services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());

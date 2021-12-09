@@ -193,7 +193,7 @@ public class AccountRepositoryTest
         await _accountCollection.InsertOneAsync(account);
         
         // Do
-        await _accountRepository.DropoutUserAsync(account.UserEmail);
+        await _accountRepository.DropoutUserAsync(account.Id);
         
         // Check
         var dbList = await (await _accountCollection.FindAsync(Builders<Account>.Filter.Empty))

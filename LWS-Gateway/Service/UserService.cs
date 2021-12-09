@@ -16,9 +16,9 @@ namespace LWS_Gateway.Service
     {
         private readonly ILogger _logger;
         private readonly IAccountRepository _accountRepository;
-        private readonly KubernetesService _kubernetesService;
+        private readonly IKubernetesService _kubernetesService;
 
-        public UserService(ILogger<UserService> logger, IAccountRepository repository, KubernetesService kubernetesService)
+        public UserService(ILogger<UserService> logger, IAccountRepository repository, IKubernetesService kubernetesService)
         {
             _logger = logger;
             _accountRepository = repository;

@@ -7,7 +7,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace LWS_Gateway.Service;
 
-public class KubernetesService
+public interface IKubernetesService
+{
+    Task CreateNameSpace(string userId);
+    Task DeleteNameSpace(string userId);
+    Task<DeploymentDefinition> CreateDeployment(string userId, DeploymentType deploymentType);
+    Task DeleteDeployment(string userId, string deploymentName);
+}
+
+public class KubernetesService : IKubernetesService
 {
     private readonly IKubernetes _client;
     private readonly ServiceDeploymentProvider _serviceDeploymentProvider;
