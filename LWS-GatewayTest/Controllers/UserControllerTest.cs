@@ -6,6 +6,7 @@ using Allure.Xunit.Attributes;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
+using LWS_Gateway.Service;
 using LWS_GatewayTest.Integration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ public class UserControllerTest: IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly IMongoCollection<Account> _mongoCollection;
+    private readonly IKubernetesService _kubernetesService;
 
     private readonly ServerFactory _serverFactory;
 
@@ -36,6 +38,7 @@ public class UserControllerTest: IDisposable
         var mongoContext = serviceProvider.GetService<MongoContext>()
                            ?? throw new NullReferenceException("MongoContext is not registered in DI Container!");
         _mongoCollection = mongoContext.MongoDatabase.GetCollection<Account>(nameof(Account));
+        _kubernetesService = _serverFactory.KubernetesService;
     }
 
     public void Dispose()
@@ -149,33 +152,34 @@ public class UserControllerTest: IDisposable
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
     }
 
-    // [AllureSubSuite("Account Dropout Site API Test")]
-    // [AllureXunit(DisplayName = "DELETE /api/user (Dropout) should return 200 OK.")]
-    // public async void Is_DropoutUser_Works_Well()
-    // {
-    //     // Let
-    //     var account = new Account
-    //     {
-    //         UserEmail = "test",
-    //         UserPassword = "testPassword",
-    //         UserAccessTokens = new List<AccessToken>
-    //         {
-    //             new()
-    //             {
-    //                 CreatedAt = DateTimeOffset.Now.ToUnixTimeSeconds(),
-    //                 ExpiresAt = DateTimeOffset.Now.AddDays(10).ToUnixTimeSeconds(),
-    //                 Token = "test"
-    //             }
-    //         }
-    //     };
-    //     await _mongoCollection.InsertOneAsync(account);
-    //     _httpClient.DefaultRequestHeaders.Add("X-API-AUTH", new []{account.UserAccessTokens[0].Token});
-    //     
-    //     // Do
-    //     var response = await _httpClient.DeleteAsync("/api/user");
-    //     
-    //     // Check
-    //     Assert.NotNull(response);
-    //     Assert.True(response.IsSuccessStatusCode);
-    // }
+    [AllureSubSuite("Account Dropout Site API Test")]
+    [AllureXunit(DisplayName = "DELETE /api/user (Dropout) should return 200 OK.")]
+    public async void Is_DropoutUser_Works_Well()
+    {
+        // Let
+        var account = new Account
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword",
+            UserAccessTokens = new List<AccessToken>
+            {
+                new()
+                {
+                    CreatedAt = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    ExpiresAt = DateTimeOffset.Now.AddDays(10).ToUnixTimeSeconds(),
+                    Token = "test"
+                }
+            }
+        };
+        await _mongoCollection.InsertOneAsync(account);
+        await _kubernetesService.CreateNameSpace(account.Id);
+        _httpClient.DefaultRequestHeaders.Add("X-API-AUTH", new []{account.UserAccessTokens[0].Token});
+        
+        // Do
+        var response = await _httpClient.DeleteAsync("/api/user");
+        
+        // Check
+        Assert.NotNull(response);
+        Assert.True(response.IsSuccessStatusCode);
+    }
 }

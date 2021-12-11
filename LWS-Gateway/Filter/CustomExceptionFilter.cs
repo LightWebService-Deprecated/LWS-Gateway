@@ -11,6 +11,7 @@ using Microsoft.Rest;
 
 namespace LWS_Gateway.Filter
 {
+    [ExcludeFromCodeCoverage]
     public class RawJsonToObjectResult : IActionResult
     {
         public string JsonString { get; set; }

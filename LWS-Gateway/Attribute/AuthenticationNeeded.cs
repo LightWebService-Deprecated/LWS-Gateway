@@ -26,19 +26,21 @@ namespace LWS_Gateway.Attribute
                         DetailedMessage = "This API needs to be logged-in. Please login!"
                     });
             }
-
-            var roleExists = httpContext.GetUserRole()?.Contains(TargetRole);
-            
-            if (roleExists is null or false)
+            else
             {
-                context.Result = new UnauthorizedObjectResult(
-                    new
-                    {
-                        StatusCode = StatusCodes.Status401Unauthorized,
-                        ErrorPath = context.HttpContext.Request.Path,
-                        Message = "Access Denied",
-                        DetailedMessage = $"This API needs {AccountRole.GetName(TargetRole)}!"
-                    });
+                var roleExists = httpContext.GetUserRole()?.Contains(TargetRole);
+            
+                if (roleExists is null or false)
+                {
+                    context.Result = new UnauthorizedObjectResult(
+                        new
+                        {
+                            StatusCode = StatusCodes.Status401Unauthorized,
+                            ErrorPath = context.HttpContext.Request.Path,
+                            Message = "Access Denied",
+                            DetailedMessage = $"This API needs {AccountRole.GetName(TargetRole)}!"
+                        });
+                }
             }
             
             base.OnActionExecuting(context);

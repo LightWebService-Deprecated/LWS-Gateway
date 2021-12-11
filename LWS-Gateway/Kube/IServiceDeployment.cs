@@ -7,5 +7,4 @@ public interface IServiceDeployment
 {
     public Task<DeploymentDefinition> CreateDeployment(string userId);
     public Task RemoveDeploymentByName(string userId, string deploymentId);
-    public Task RemoveDeploymentByDefinition(string userId, DeploymentDefinition definition);
 }

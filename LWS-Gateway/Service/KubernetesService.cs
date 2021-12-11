@@ -47,7 +47,7 @@ public class KubernetesService : IKubernetesService
     }
 
     public async Task<DeploymentDefinition> CreateDeployment(string userId, DeploymentType deploymentType)
-    {
+    { 
         var serviceDeployment = _serviceDeploymentProvider.SelectCorrectDeployment(deploymentType, _client);
         var definition = await serviceDeployment.CreateDeployment(userId);
         

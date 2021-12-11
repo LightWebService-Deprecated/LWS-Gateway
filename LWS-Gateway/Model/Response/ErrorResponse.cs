@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace LWS_Gateway.Model.Response
 {
+    [ExcludeFromCodeCoverage]
     public class ErrorResponse
     {
         public int StatusCodes { get; set; }

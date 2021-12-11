@@ -5,7 +5,6 @@ using LWS_Gateway.Configuration;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
-using LWS_GatewayTest.Docker;
 using MongoDB.Driver;
 using Xunit;
 

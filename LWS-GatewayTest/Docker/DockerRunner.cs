@@ -18,7 +18,8 @@ public class DockerRunner: IDisposable
 
         _dockerImageList = new List<DockerImageBase>
         {
-            new MongoDbContainer(_dockerClient)
+            new MongoDbContainer(_dockerClient),
+            new K3SContainer(_dockerClient)
         };
 
         CreateAllContainer().Wait();

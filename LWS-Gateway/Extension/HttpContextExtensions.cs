@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using LWS_Gateway.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace LWS_Gateway.Extension;
 
+[ExcludeFromCodeCoverage]
 public static class HttpContextExtensions
 {
     private const string UserId = "userId";

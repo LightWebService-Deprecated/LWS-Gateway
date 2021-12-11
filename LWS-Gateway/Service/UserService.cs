@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace LWS_Gateway.Service
             _kubernetesService = kubernetesService;
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task RegisterRequest(RegisterRequest request)
         {
             try

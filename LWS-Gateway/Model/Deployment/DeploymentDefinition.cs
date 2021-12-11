@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LWS_Gateway.Model.Deployment;
 
+[ExcludeFromCodeCoverage]
 public class DeploymentDefinition
 {
     public string DeploymentName { get; set; }

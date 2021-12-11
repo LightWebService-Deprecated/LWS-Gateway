@@ -1,58 +1,58 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
 namespace LWS_GatewayTest.Docker.ContainerDefinition;
 
-public class MongoDbContainer: DockerImageBase
+public class K3SContainer: DockerImageBase
 {
-    private const string ContainerName = "INTGR-Mongo";
-    public MongoDbContainer(DockerClient dockerClient) : base(dockerClient)
+    private const string _containerName = "INTGR-K3S";
+    public K3SContainer(DockerClient dockerClient) : base(dockerClient)
     {
-        ImageName = "mongo";
+        ImageName = "rancher/k3s";
         ImageTag = "latest";
-        ContainerParameters = new()
+
+        ContainerParameters = new CreateContainerParameters
         {
-            Name = ContainerName,
             Image = FullImageName,
+            Name = _containerName,
             HostConfig = new HostConfig
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    ["27017"] = new List<PortBinding> {new() {HostIP = "0.0.0.0", HostPort = "27017"}}
-                }
+                    ["6443"] = new List<PortBinding> {new() {HostIP = "0.0.0.0", HostPort = "6443"}},
+                    ["80"] = new List<PortBinding> {new() {HostIP = "0.0.0.0", HostPort = "80"}},
+                    ["443"] = new List<PortBinding> {new() {HostIP = "0.0.0.0", HostPort = "443"}},
+                },
+                Binds = new List<string>
+                {
+                    "/tmp:/output"
+                },
+                Privileged = true
             },
             ExposedPorts = new Dictionary<string, EmptyStruct>
             {
-                ["27017"] = new()
+                ["6443"] = new(),
+                ["80"] = new(),
+                ["443"] = new()
             },
             Env = new List<string>
             {
-                "MONGO_INITDB_ROOT_USERNAME=root",
-                "MONGO_INITDB_ROOT_PASSWORD=testPassword"
+                "K3S_KUBECONFIG_OUTPUT=/output/kubeconfig.yaml",
+                "K3S_KUBECONFIG_MODE=666"
+            },
+            Cmd = new List<string>
+            {
+                "server"
             }
         };
     }
 
-    public override async Task RunContainerAsync()
-    {
-        await DockerClient.Containers.StartContainerAsync(ContainerId, new ContainerStartParameters());
-    }
-
     public override async Task CreateContainerAsync()
     {
-        if (!await CheckImageExists())
-        {
-            // Pull from official Registry
-            await DockerClient.Images.CreateImageAsync(new ImagesCreateParameters
-            {
-                FromImage = ImageName,
-                Tag = ImageTag
-            }, new AuthConfig(), new Progress<JSONMessage>());
-        }
-        
         var list = await DockerClient.Containers.ListContainersAsync(new ContainersListParameters
         {
             All = true,
@@ -60,7 +60,7 @@ public class MongoDbContainer: DockerImageBase
             {
                 ["name"] = new Dictionary<string, bool>
                 {
-                    [ContainerName] = true
+                    [_containerName] = true
                 }
             }
         });
@@ -74,8 +74,24 @@ public class MongoDbContainer: DockerImageBase
             }
         }
         
+        if (!await CheckImageExists())
+        {
+            // Pull from official Registry
+            await DockerClient.Images.CreateImageAsync(new ImagesCreateParameters
+            {
+                FromImage = ImageName,
+                Tag = ImageTag
+            }, new AuthConfig(), new Progress<JSONMessage>());
+        }
+
         ContainerId = (await DockerClient.Containers.CreateContainerAsync(ContainerParameters))
             .ID;
+    }
+
+    public override async Task RunContainerAsync()
+    {
+        await DockerClient.Containers.StartContainerAsync(ContainerId, new ContainerStartParameters());
+        Thread.Sleep(20 * 1000);
     }
 
     public override async Task RemoveContainerAsync()

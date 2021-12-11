@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace LWS_Gateway.Model;
 
+[ExcludeFromCodeCoverage]
 public class AccessToken
 {
     public long CreatedAt { get; set; }

@@ -88,9 +88,4 @@ public class UbuntuDeployment: IServiceDeployment
     {
         await _kubernetesClient.DeleteNamespacedDeploymentAsync(deploymentName, userId);
     }
-
-    public async Task RemoveDeploymentByDefinition(string userId, DeploymentDefinition definition)
-    {
-        await RemoveDeploymentByName(userId, definition.DeploymentName);
-    }
 }
