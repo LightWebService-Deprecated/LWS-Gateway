@@ -34,6 +34,7 @@ namespace LWS_Gateway.Service
             {
                 var user = await _accountRepository.CreateAccountAsync(request);
                 await _kubernetesService.CreateNameSpace(user.Id);
+                await _kubernetesService.SetupInitialVolume(user.Id);
             }
             catch (Exception e)
             {
