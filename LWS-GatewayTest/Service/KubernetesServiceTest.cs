@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Allure.Xunit.Attributes;
 using k8s;
 using k8s.Models;
 using LWS_Gateway.Kube;
@@ -15,7 +14,6 @@ using Xunit;
 namespace LWS_GatewayTest.Service;
 
 [Collection("DockerIntegration")]
-[AllureSuite("Kubernetes Site Integration Test")]
 public class KubernetesServiceTest: IDisposable
 {
     private readonly Mock<IConfiguration> _mockConfiguration;
@@ -97,8 +95,7 @@ public class KubernetesServiceTest: IDisposable
             .Select(a => a[random.Next(charDictionary.Length)]).ToArray());
     }
 
-    [AllureSubSuite("Namespace Creation Test")]
-    [AllureXunitTheory(DisplayName = "CreateNameSpace: CreateNameSpace should create namespace with given name.")]
+    [Theory(DisplayName = "CreateNameSpace: CreateNameSpace should create namespace with given name.")]
     [InlineData("testid")]
     [InlineData("testtwo")]
     [InlineData("somestrangeone")]
@@ -111,8 +108,7 @@ public class KubernetesServiceTest: IDisposable
         await EnsureNamespaceCreated(namespaceName);
     }
 
-    [AllureSubSuite("Namespace Deletion Test")]
-    [AllureXunitTheory(DisplayName = "DeleteNameSpace: DeleteNameSpace should remove namespace with given name.")]
+    [Theory(DisplayName = "DeleteNameSpace: DeleteNameSpace should remove namespace with given name.")]
     [InlineData("testidwhat")]
     [InlineData("testidtwof")]
     [InlineData("strangename")]
@@ -129,8 +125,7 @@ public class KubernetesServiceTest: IDisposable
         await EnsureNamespaceDeleted(namespaceName);
     }
 
-    [AllureSubSuite("Deployment Creation Test")]
-    [AllureXunit(DisplayName = "CreateDeployment: CreateDeployment should create ubuntu deployment well.")]
+    [Fact(DisplayName = "CreateDeployment: CreateDeployment should create ubuntu deployment well.")]
     public async void Is_CreateDeployment_Creates_Ubuntu_Well()
     {
         // Let
@@ -149,8 +144,7 @@ public class KubernetesServiceTest: IDisposable
         await EnsureDeploymentCreated(deploymentDefinition.DeploymentName);
     }
 
-    [AllureSubSuite("Deployment Deletion Test")]
-    [AllureXunit(DisplayName = "DeleteDeployment: DeleteDeployment should remove deployment well.")]
+    [Fact(DisplayName = "DeleteDeployment: DeleteDeployment should remove deployment well.")]
     public async void Is_DeleteDeployment_Deletes_Deployment_Well()
     {
         // Let

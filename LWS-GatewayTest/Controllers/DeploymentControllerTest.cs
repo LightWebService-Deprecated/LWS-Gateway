@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Allure.Xunit.Attributes;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Deployment;
 using LWS_Gateway.Model.Request;
@@ -15,7 +14,6 @@ using Xunit;
 
 namespace LWS_GatewayTest.Controllers;
 
-[AllureSuite("Deployment Related End - End API Test")]
 [Collection("DockerIntegration")]
 public class DeploymentControllerTest : IDisposable
 {
@@ -70,8 +68,7 @@ public class DeploymentControllerTest : IDisposable
         return accessToken.Token!;
     }
 
-    [AllureSubSuite("Deployment Request(Creation) API End - End Testing")]
-    [AllureXunitTheory(DisplayName = "POST /api/v1/deployment should create desired deployment well.")]
+    [Theory(DisplayName = "POST /api/v1/deployment should create desired deployment well.")]
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
@@ -102,8 +99,7 @@ public class DeploymentControllerTest : IDisposable
         }
     }
 
-    [AllureSubSuite("Deployment Request(Creation) API End - End Testing")]
-    [AllureXunit(DisplayName = "POST /api/v1/deployment should return 401 unauthorized when no token provided.")]
+    [Fact(DisplayName = "POST /api/v1/deployment should return 401 unauthorized when no token provided.")]
     public async void Is_CreateDeployment_Returns_Unauthorized_When_No_Token()
     {
         // Let
@@ -118,8 +114,7 @@ public class DeploymentControllerTest : IDisposable
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)responseMessage.StatusCode);
     }
 
-    [AllureSubSuite("Deployment Request(Deletion) API End - End Testing")]
-    [AllureXunit(DisplayName = "DELETE /api/v1/deployment should remove deployment well.")]
+    [Fact(DisplayName = "DELETE /api/v1/deployment should remove deployment well.")]
     public async void Is_DeleteDeployment_Works_Well()
     {
         // Let
@@ -154,8 +149,7 @@ public class DeploymentControllerTest : IDisposable
         Assert.Equal(StatusCodes.Status200OK, (int)deleteResponse.StatusCode);
     }
 
-    [AllureSubSuite("Deployment Request(Deletion) API End - End Testing")]
-    [AllureXunit(DisplayName =
+    [Fact(DisplayName =
         "DELETE /api/v1/deployment should return 404 not found when user tried to remove non-exist deployment.")]
     public async void Is_DeleteDeployment_Returns_404_When_Removing_Non_Exists_Deployment()
     {
@@ -179,8 +173,7 @@ public class DeploymentControllerTest : IDisposable
         Assert.Equal(StatusCodes.Status404NotFound, (int)deleteResponse.StatusCode);
     }
     
-    [AllureSubSuite("Deployment Request(Deletion) API End - End Testing")]
-    [AllureXunit(DisplayName =
+    [Fact(DisplayName =
         "DELETE /api/v1/deployment should return 401 unauthorized when no token supplied.")]
     public async void Is_DeleteDeployment_Returns_401_When_No_Token()
     {

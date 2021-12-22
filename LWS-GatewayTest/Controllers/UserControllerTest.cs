@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using Allure.Xunit.Attributes;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
@@ -15,7 +14,6 @@ using Xunit;
 
 namespace LWS_GatewayTest.Controllers;
 
-[AllureSuite("User Management End-End API Test")]
 [Collection("DockerIntegration")]
 public class UserControllerTest: IDisposable
 {
@@ -46,8 +44,7 @@ public class UserControllerTest: IDisposable
         _serverFactory.Dispose();
     }
 
-    [AllureSubSuite("Account Creation Site API Test")]
-    [AllureXunit(DisplayName = "POST /api/user (register) should return 200 OK.")]
+    [Fact(DisplayName = "POST /api/user (register) should return 200 OK.")]
     public async void Is_CreateUser_Returns_OK()
     {
         // Let
@@ -66,8 +63,7 @@ public class UserControllerTest: IDisposable
         Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
     }
 
-    [AllureSubSuite("Account Creation Site API Test")]
-    [AllureXunit(DisplayName = "POST /api/user (register) should return 409 CONFLICT.")]
+    [Fact(DisplayName = "POST /api/user (register) should return 409 CONFLICT.")]
     public async void Is_CreateUser_Returns_Conflict()
     {
         // Let
@@ -92,8 +88,7 @@ public class UserControllerTest: IDisposable
         Assert.Equal(StatusCodes.Status409Conflict, (int)response.StatusCode);
     }
 
-    [AllureSubSuite("Account Login Site API Test")]
-    [AllureXunit(DisplayName = "POST /api/user/login (login) should return 200 OK with access token.")]
+    [Fact(DisplayName = "POST /api/user/login (login) should return 200 OK with access token.")]
     public async void Is_LoginUser_Returns_Ok()
     {
         // Let
@@ -119,8 +114,7 @@ public class UserControllerTest: IDisposable
         Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
     }
 
-    [AllureSubSuite("Account Login Site API Test")]
-    [AllureXunit(DisplayName = "POST /api/user/login (login) should return 401 UNAUTHORIZED")]
+    [Fact(DisplayName = "POST /api/user/login (login) should return 401 UNAUTHORIZED")]
     public async void Is_LoginUser_Returns_Unauthorized()
     {
         // Let
@@ -139,8 +133,7 @@ public class UserControllerTest: IDisposable
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
     }
 
-    [AllureSubSuite("Account Dropout Site API Test")]
-    [AllureXunit(DisplayName = "DELETE /api/user (Dropout) should return 401 UNAUTHORIZED when access token is not provided.")]
+    [Fact(DisplayName = "DELETE /api/user (Dropout) should return 401 UNAUTHORIZED when access token is not provided.")]
     public async void Is_DropoutUser_Returns_Unauthorized_When_AccessToken_Not_Provided()
     {
         // Do
@@ -151,9 +144,8 @@ public class UserControllerTest: IDisposable
         Assert.False(response.IsSuccessStatusCode);
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
     }
-
-    [AllureSubSuite("Account Dropout Site API Test")]
-    [AllureXunit(DisplayName = "DELETE /api/user (Dropout) should return 200 OK.")]
+    
+    [Fact(DisplayName = "DELETE /api/user (Dropout) should return 200 OK.")]
     public async void Is_DropoutUser_Works_Well()
     {
         // Let
