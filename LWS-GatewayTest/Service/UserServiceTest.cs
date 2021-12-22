@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Allure.Xunit.Attributes;
@@ -165,6 +166,46 @@ public class UserServiceTest
         
         // Check
         Assert.NotNull(accessToken);
+        _mockAccountRepository.Verify(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
+    }
+
+    [AllureSubSuite("Account Management: Login Site Verification Sub Suite")]
+    [AllureXunit(DisplayName =
+        "LoginRequest: LoginRequest should return previously-used token if non-expired token already exists.")]
+    public async void Is_LoginRequest_Returns_Previously_Used_Token()
+    {
+        // Let
+        var account = new Account
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword",
+            UserAccessTokens = new List<AccessToken>
+            {
+                new()
+                {
+                    CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    ExpiresAt = DateTimeOffset.UtcNow.AddDays(20).ToUnixTimeSeconds(),
+                    Token = "testToken",
+                    IsExpiredExternally = false
+                }
+            }
+        };
+        _mockAccountRepository.Setup(a => a.LoginAccountAsync(It.IsAny<LoginRequest>()))
+            .ReturnsAsync(account);
+        _mockAccountRepository.Setup(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
+        
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword"
+        };
+        
+        // Do
+        var accessToken = await _userService.LoginRequest(loginRequest);
+
+        // Check
+        Assert.NotNull(accessToken);
+        Assert.Equal("testToken", accessToken.Token);
         _mockAccountRepository.Verify(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
     }
 

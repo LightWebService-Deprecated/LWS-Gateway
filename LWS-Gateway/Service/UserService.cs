@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,6 +62,15 @@ namespace LWS_Gateway.Service
 
         private AccessToken CreateAccessToken(Account account)
         {
+            var previousToken =
+                account.UserAccessTokens.FirstOrDefault(a =>
+                    a.ExpiresAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+
+            if (previousToken != null)
+            {
+                return previousToken;
+            }
+            
             using var shaManaged = new SHA512Managed();
             var targetString = $"{DateTime.Now.Ticks}/{account.UserEmail}/{Guid.NewGuid().ToString()}";
             var targetByte = Encoding.UTF8.GetBytes(targetString);
