@@ -20,6 +20,7 @@ namespace LWS_Gateway
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(a => a.AddJsonFile("/app/secrets/appsettings.json", true))
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }
