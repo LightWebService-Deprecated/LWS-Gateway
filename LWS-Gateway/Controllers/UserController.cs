@@ -19,6 +19,13 @@ namespace LWS_Gateway.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
+        [AuthenticationNeeded(TargetRole = AccountRole.User)]
+        public async Task<IActionResult> GetCurrentUserInfo()
+        {
+            return Ok(await _userService.GetAccountProjection(HttpContext.GetUserId()));
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateUser(RegisterRequest registerMessage)
         {

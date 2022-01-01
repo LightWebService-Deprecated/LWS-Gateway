@@ -39,7 +39,8 @@ namespace LWS_Gateway.Model
 
         public AccountProjection ToProjection() => new AccountProjection
         {
-            UserEmail = this.UserEmail
+            UserEmail = this.UserEmail,
+            AccountRoles = this.AccountRoles
         };
     }
 
@@ -47,5 +48,6 @@ namespace LWS_Gateway.Model
     public class AccountProjection
     {
         public string UserEmail { get; set; }
+        public HashSet<AccountRole> AccountRoles { get; set; }
     }
 }

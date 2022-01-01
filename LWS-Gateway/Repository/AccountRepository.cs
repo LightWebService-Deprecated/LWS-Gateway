@@ -47,6 +47,13 @@ namespace LWS_Gateway.Repository
         /// <param name="userEmail">User Identifier</param>
         /// <returns>None.</returns>
         public Task DropoutUserAsync(string userId);
+
+        /// <summary>
+        /// Get Account Information by userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public Task<Account> GetAccountOrDefaultAsync(string userId);
     }
     
     public class AccountRepository: IAccountRepository
@@ -113,6 +120,15 @@ namespace LWS_Gateway.Repository
             var filter = Builders<Account>.Filter.Eq(a => a.Id, userId);
 
             await _accountCollection.DeleteOneAsync(filter);
+        }
+
+        public async Task<Account> GetAccountOrDefaultAsync(string userId)
+        {
+            var targetAccount = await _accountCollection.AsQueryable()
+                .Where(a => a.Id == userId)
+                .FirstOrDefaultAsync();
+
+            return targetAccount;
         }
     }
 }

@@ -174,4 +174,34 @@ public class UserControllerTest: IDisposable
         Assert.NotNull(response);
         Assert.True(response.IsSuccessStatusCode);
     }
+
+    [Fact(DisplayName = "GET /api/user (Get User Projection) should return 200 OK.")]
+    public async void Is_GetUserProjection_Returns_200()
+    {
+        // let
+        var account = new Account
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword",
+            UserAccessTokens = new List<AccessToken>
+            {
+                new()
+                {
+                    CreatedAt = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                    ExpiresAt = DateTimeOffset.Now.AddDays(10).ToUnixTimeSeconds(),
+                    Token = "test"
+                }
+            }
+        };
+        await _mongoCollection.InsertOneAsync(account);
+        await _kubernetesService.CreateNameSpace(account.Id);
+        _httpClient.DefaultRequestHeaders.Add("X-API-AUTH", new []{account.UserAccessTokens[0].Token});
+        
+        // Do
+        var response = await _httpClient.GetAsync("/api/user");
+        
+        // Check
+        Assert.NotNull(response);
+        Assert.True(response.IsSuccessStatusCode);
+    }
 }

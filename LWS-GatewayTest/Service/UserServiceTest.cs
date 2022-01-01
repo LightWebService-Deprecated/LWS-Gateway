@@ -216,4 +216,43 @@ public class UserServiceTest
         _mockAccountRepository.Verify((a => a.DropoutUserAsync(userId)));
         _mockKubernetesService.Verify(a => a.DeleteNameSpace(It.IsAny<string>()));
     }
+    
+    [Fact(DisplayName =
+        "GetAccountProjection: GetAccountProjection should throw ApiServerException when account information is not found.")]
+    public async void Is_GetAccountProjection_Throws_ApiServerException()
+    {
+        // Let
+        var userId = "testId";
+        _mockAccountRepository.Setup(a => a.GetAccountOrDefaultAsync(userId))
+            .ReturnsAsync(value: null);
+        
+        // Do
+        await Assert.ThrowsAsync<ApiServerException>(() => _userService.GetAccountProjection(userId));
+        _mockAccountRepository.Verify(a => a.GetAccountOrDefaultAsync(userId));
+    }
+
+    [Fact(DisplayName =
+        "GetAccountProjection: GetAccountProjection should return account projection object when actual object exists.")]
+    public async void Is_GetAccountProjection_Returns_Account_Projection()
+    {
+        // Let
+        var account = new Account
+        {
+            AccountRoles = new HashSet<AccountRole> {AccountRole.User},
+            UserEmail = "kangdroid@test.com",
+            UserPassword = "testPassword@",
+            UserAccessTokens = new List<AccessToken>()
+        };
+        _mockAccountRepository.Setup(a => a.GetAccountOrDefaultAsync(account.Id))
+            .ReturnsAsync(account);
+        
+        // Do
+        var result = await _userService.GetAccountProjection(account.Id);
+        
+        // Check
+        Assert.NotNull(result);
+        Assert.Equal(account.UserEmail, result.UserEmail);
+        Assert.Contains(AccountRole.User, result.AccountRoles);
+        _mockAccountRepository.Verify(a => a.GetAccountOrDefaultAsync(account.Id));
+    }
 }

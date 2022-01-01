@@ -4,6 +4,7 @@ using LWS_Gateway.Configuration;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Xunit;
 
@@ -199,5 +200,39 @@ public class AccountRepositoryTest
             .ToListAsync();
         Assert.Empty(dbList);
     }
-    
+
+    [Fact(DisplayName =
+        "GetAccountOrDefaultAsync: GetAccountOrDefaultAsync should return null when user is not registered.")]
+    public async void Is_GetAccountOrDefaultAsync_Returns_Null_When_Not_Registered()
+    {
+        // Let
+        var userId = new BsonObjectId(ObjectId.GenerateNewId());
+        
+        // Do
+        var accountInfo = await _accountRepository.GetAccountOrDefaultAsync(userId.ToString());
+        
+        // Check
+        Assert.Null(accountInfo);
+    }
+
+    [Fact(DisplayName =
+        "GetAccountOrDefaultAsync: GetAccountOrDefaultAsync should return object when user is registered.")]
+    public async void Is_GetAccountOrDefaultAsync_Returns_Object_When_Registered()
+    {
+        // Let
+        var account = new Account
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword@"
+        };
+        await _accountCollection.InsertOneAsync(account);
+        
+        // Do
+        var accountInfo = await _accountRepository.GetAccountOrDefaultAsync(account.Id);
+        
+        // Check
+        Assert.NotNull(accountInfo);
+        Assert.Equal(account.UserEmail, accountInfo.UserEmail);
+        Assert.Equal(account.UserPassword, accountInfo.UserPassword);
+    }
 }

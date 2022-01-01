@@ -27,6 +27,15 @@ namespace LWS_Gateway.Service
             _kubernetesService = kubernetesService;
         }
 
+        public async Task<AccountProjection> GetAccountProjection(string userId)
+        {
+            var accountInfo = await _accountRepository.GetAccountOrDefaultAsync(userId)
+                              ?? throw new ApiServerException(StatusCodes.Status404NotFound,
+                                  $"Cannot find User with user id: {userId}");
+
+            return accountInfo.ToProjection();
+        }
+
         [ExcludeFromCodeCoverage]
         public async Task RegisterRequest(RegisterRequest request)
         {
