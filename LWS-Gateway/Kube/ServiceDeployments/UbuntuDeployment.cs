@@ -25,14 +25,6 @@ public class UbuntuDeployment: IServiceDeployment
         Ports = new List<V1ContainerPort>
         {
             new(containerPort: SshPort, protocol: "TCP")
-        },
-        VolumeMounts = new List<V1VolumeMount>
-        {
-            new()
-            {
-                MountPath = "/test",
-                Name = "volume-test"
-            }
         }
     };
 
@@ -63,18 +55,7 @@ public class UbuntuDeployment: IServiceDeployment
                     Metadata = new V1ObjectMeta { Labels = deploymentPodLabel },
                     Spec = new V1PodSpec
                     {
-                        Containers = new List<V1Container> { DefaultUbuntuContainer },
-                        Volumes = new List<V1Volume>
-                        {
-                            new()
-                            {
-                                Name = "volume-test",
-                                PersistentVolumeClaim = new V1PersistentVolumeClaimVolumeSource()
-                                {
-                                    ClaimName = "global-volume-claim"
-                                }
-                            }
-                        }
+                        Containers = new List<V1Container> { DefaultUbuntuContainer }
                     }
                 }
             }
