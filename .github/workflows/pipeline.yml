@@ -51,7 +51,7 @@ jobs:
   
   DeployImage:
     name: Deploy image to docker container registry(public)
-    needs: [RunTests]
+    needs: [RunUnitTests, RunIntegrationTest]
     runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
     strategy:
