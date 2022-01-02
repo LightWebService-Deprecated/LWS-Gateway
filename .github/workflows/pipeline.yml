@@ -67,4 +67,5 @@ jobs:
       
       - name: Build Image
         run: |
+          docker login --username ${{secrets.DOCKER_USERNAME}} --password ${{secrets.DOCKER_USERPASSWORD}}
           docker buildx build -f LWS-Gateway/Dockerfile --platform linux/amd64,linux/arm64 -t kangdroid/lws-gateway:${{ matrix.image-version }} --push .
