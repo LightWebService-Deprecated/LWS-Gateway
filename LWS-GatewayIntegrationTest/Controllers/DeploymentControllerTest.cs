@@ -95,6 +95,7 @@ public class DeploymentControllerTest : IDisposable
             Assert.NotNull(responseBody);
             Assert.Contains("-ubuntu-", responseBody.DeploymentName);
             Assert.Equal(DeploymentType.Ubuntu, responseBody.DeploymentType);
+            Assert.Equal(2, responseBody.DeploymentOpenedPorts.Count);
             Assert.Contains(22, responseBody.DeploymentOpenedPorts);
         }
     }
@@ -124,8 +125,8 @@ public class DeploymentControllerTest : IDisposable
             DeploymentType = DeploymentType.Ubuntu
         };
         _httpClient.AddAuthToken(accessToken);
-        var response = await (await _httpClient.PostAsJsonAsync("/api/v1/deployment", deploymentRequest))
-            .Content.ReadFromJsonAsync<DeploymentDefinition>();
+        var responseSecond = await _httpClient.PostAsJsonAsync("/api/v1/deployment", deploymentRequest);
+        var response = await responseSecond.Content.ReadFromJsonAsync<DeploymentDefinition>();
         var deleteRequest = new DeploymentDeleteRequest
         {
             DeploymentName = response.DeploymentName

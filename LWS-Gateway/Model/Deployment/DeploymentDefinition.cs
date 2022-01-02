@@ -7,6 +7,7 @@ namespace LWS_Gateway.Model.Deployment;
 [ExcludeFromCodeCoverage]
 public class DeploymentDefinition
 {
+    public string ServiceName { get; set; }
     public string DeploymentName { get; set; }
     public DeploymentType DeploymentType { get; set; }
     public List<int> DeploymentOpenedPorts { get; set; }

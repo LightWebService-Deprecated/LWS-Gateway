@@ -142,6 +142,14 @@ public class KubernetesServiceTest: IDisposable
         Assert.Equal(DeploymentType.Ubuntu, deploymentDefinition.DeploymentType);
         Assert.Contains(22, deploymentDefinition.DeploymentOpenedPorts);
         await EnsureDeploymentCreated(deploymentDefinition.DeploymentName);
+        
+        // Check service object created
+        var serviceList = await _testClient.ListNamespacedServiceWithHttpMessagesAsync(userId);
+        Assert.NotNull(serviceList);
+        Assert.True(serviceList.Body.Items.Count >= 1);
+        var ubuntuService = serviceList.Body.Items
+            .FirstOrDefault(a => a.Metadata.Name.Contains("ubuntu-service"));
+        Assert.NotNull(ubuntuService);
     }
 
     [Fact(DisplayName = "DeleteDeployment: DeleteDeployment should remove deployment well.")]

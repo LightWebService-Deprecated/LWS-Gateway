@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
 using LWS_Gateway.Model.Deployment;
+using MongoDB.Bson;
 
 namespace LWS_Gateway.Kube.ServiceDeployments;
 
@@ -61,7 +62,33 @@ public class UbuntuDeployment: IServiceDeployment
             }
         };
     }
-    
+
+    private V1Service CreateUbuntuService(V1Deployment deployment, string userId) => new V1Service
+    {
+        ApiVersion = "v1",
+        Kind = "Service",
+        Metadata = new V1ObjectMeta
+        {
+            Name = $"ubuntu-service-{DateTimeOffset.Now.ToUnixTimeMilliseconds()}"
+        },
+        Spec = new V1ServiceSpec
+        {
+            Ports = new List<V1ServicePort>
+            {
+                new V1ServicePort
+                {
+                    TargetPort = SshPort,
+                    Port = SshPort
+                }
+            },
+            Selector = new Dictionary<string, string>
+            {
+                ["deploymentIdentifier"] = deployment.Metadata.Labels["deploymentIdentifier"]
+            },
+            Type = "NodePort"
+        }
+    };
+
     private string GenerateRandomToken(int length = 64)
     {
         var random = new Random();
@@ -73,14 +100,22 @@ public class UbuntuDeployment: IServiceDeployment
     
     public async Task<DeploymentDefinition> CreateDeployment(string userId)
     {
+        // Create Deployment
         var deployment = CreateUbuntuDeploymentObject(userId);
         await _kubernetesClient.CreateNamespacedDeploymentWithHttpMessagesAsync(deployment, userId);
         
+        // Create Deployment Service(To expose)
+        var service = CreateUbuntuService(deployment, userId);
+        var createdService = await _kubernetesClient.CreateNamespacedServiceWithHttpMessagesAsync(service, userId);
+
+        var openedPort = createdService.Body.Spec.Ports.First().NodePort!.Value;
+        
         return new DeploymentDefinition
         {
+            ServiceName = service.Metadata.Name,
             DeploymentName = deployment.Metadata.Name,
             DeploymentType = DeploymentType.Ubuntu,
-            DeploymentOpenedPorts = new List<int> {SshPort}
+            DeploymentOpenedPorts = new List<int> {SshPort, openedPort}
         };
     }
 
