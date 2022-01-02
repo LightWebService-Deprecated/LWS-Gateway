@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   RunTests:
+    name: Run Unit tests
     runs-on: ubuntu-latest
     strategy: 
       matrix:
