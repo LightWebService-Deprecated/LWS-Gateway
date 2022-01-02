@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: lws-gateway
-          image: kangdroid/lws-gateway:1.0.0
+          image: kangdroid/lws-gateway:1.0.1
           ports:
           - containerPort: 80
           volumeMounts:
