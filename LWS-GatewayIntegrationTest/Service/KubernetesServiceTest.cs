@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
-namespace LWS_GatewayTest.Service;
+namespace LWS_GatewayIntegrationTest.Service;
 
 [Collection("DockerIntegration")]
 public class KubernetesServiceTest: IDisposable

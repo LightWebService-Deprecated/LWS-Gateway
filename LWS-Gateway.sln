@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWS-Gateway", "LWS-Gateway\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWS-GatewayTest", "LWS-GatewayTest\LWS-GatewayTest.csproj", "{B65043B4-2593-445B-8CBC-5A59F7E27962}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LWS-GatewayIntegrationTest", "LWS-GatewayIntegrationTest\LWS-GatewayIntegrationTest.csproj", "{FE79E651-E93F-4A9F-B1B0-686E7959BC76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{B65043B4-2593-445B-8CBC-5A59F7E27962}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B65043B4-2593-445B-8CBC-5A59F7E27962}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B65043B4-2593-445B-8CBC-5A59F7E27962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE79E651-E93F-4A9F-B1B0-686E7959BC76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE79E651-E93F-4A9F-B1B0-686E7959BC76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE79E651-E93F-4A9F-B1B0-686E7959BC76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE79E651-E93F-4A9F-B1B0-686E7959BC76}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

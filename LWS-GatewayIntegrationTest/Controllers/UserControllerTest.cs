@@ -6,13 +6,13 @@ using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
-using LWS_GatewayTest.Integration;
+using LWS_GatewayIntegrationTest.Integration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Xunit;
 
-namespace LWS_GatewayTest.Controllers;
+namespace LWS_GatewayIntegrationTest.Controllers;
 
 [Collection("DockerIntegration")]
 public class UserControllerTest: IDisposable

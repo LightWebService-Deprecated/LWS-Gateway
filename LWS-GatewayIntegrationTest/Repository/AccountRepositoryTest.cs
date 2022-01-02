@@ -8,7 +8,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Xunit;
 
-namespace LWS_GatewayTest.Repository;
+namespace LWS_GatewayIntegrationTest.Repository;
 
 [Collection("DockerIntegration")]
 public class AccountRepositoryTest

@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace LWS_GatewayTest.Docker;
+namespace LWS_GatewayIntegrationTest.Docker;
 
 [CollectionDefinition("DockerIntegration")]
 public class DockerXUnitCollection: ICollectionFixture<DockerRunner>

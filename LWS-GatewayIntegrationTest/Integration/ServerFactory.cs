@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace LWS_GatewayTest.Integration;
+namespace LWS_GatewayIntegrationTest.Integration;
 
 public class ServerFactory: WebApplicationFactory<Startup>
 {

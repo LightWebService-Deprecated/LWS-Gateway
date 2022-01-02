@@ -3,13 +3,12 @@ name: Test And Release
 on: [push]
 
 jobs:
-  RunTests:
+  RunUnitTests:
     name: Run Unit tests
     runs-on: ubuntu-latest
     strategy: 
       matrix:
         dotnet-version: ['6.0.x']
-        image-version: ['1.0.x']
     steps:
       - uses: actions/checkout@v2
   
@@ -25,13 +24,39 @@ jobs:
         run: dotnet build --configuration Release --no-restore
   
       - name: Test[With MSBuild configuration]
-        run: dotnet test --no-restore --verbosity normal -p:CollectCoverage=true -p:Threshold=90
+        run: dotnet test --no-restore --verbosity normal -p:CollectCoverage=true -p:Threshold=90 LWS-GatewayTest/LWS-GatewayTest.csproj
+
+  RunIntegrationTest:
+    name: Run Integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test[With MSBuild configuration]
+        run: dotnet test --no-restore --verbosity normal -p:CollectCoverage=true -p:Threshold=90 LWS-GatewayIntegrationTest/LWS-GatewayIntegrationTest.csproj
   
   DeployImage:
     name: Deploy image to docker container registry(public)
     needs: [RunTests]
     runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
+    strategy:
+      matrix:
+        image-version: [ '1.0.x' ]
     steps:
       - uses: actions/checkout@v2
       

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Docker.DotNet;
 using LWS_GatewayTest.Docker.ContainerDefinition;
 
-namespace LWS_GatewayTest.Docker;
+namespace LWS_GatewayIntegrationTest.Docker;
 
 public class DockerRunner: IDisposable
 {

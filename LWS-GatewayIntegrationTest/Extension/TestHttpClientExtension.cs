@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace LWS_GatewayTest.Extension;
+namespace LWS_GatewayIntegrationTest.Extension;
 
 public static class TestHttpClientExtension
 {

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using LWS_Gateway.Model;
 using LWS_Gateway.Model.Deployment;
 using LWS_Gateway.Model.Request;
-using LWS_GatewayTest.Extension;
-using LWS_GatewayTest.Integration;
+using LWS_GatewayIntegrationTest.Extension;
+using LWS_GatewayIntegrationTest.Integration;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace LWS_GatewayTest.Controllers;
+namespace LWS_GatewayIntegrationTest.Controllers;
 
 [Collection("DockerIntegration")]
 public class DeploymentControllerTest : IDisposable
