@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using k8s;
 using k8s.Models;
+using LWS_Gateway.Configuration;
 using LWS_Gateway.Kube;
 using LWS_Gateway.Model.Deployment;
+using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 using Moq;
 using Xunit;
 
@@ -19,9 +22,19 @@ public class KubernetesServiceTest: IDisposable
     private readonly Mock<IConfiguration> _mockConfiguration;
     private readonly IKubernetes _testClient;
     private readonly IKubernetesService _kubernetesService;
+    private readonly IMongoCollection<DeploymentDefinition> _deploymentCollection;
 
     public KubernetesServiceTest()
     {
+        var mongoContext = new MongoContext(new MongoConfiguration
+        {
+            MongoConnection = "mongodb://root:testPassword@localhost:27017",
+            MongoDbName = Guid.NewGuid().ToString()
+        });
+        
+        _deploymentCollection =
+            mongoContext.MongoDatabase.GetCollection<DeploymentDefinition>(nameof(DeploymentDefinition));
+        
         _mockConfiguration = new Mock<IConfiguration>();
         _mockConfiguration.Setup(a => a["KubePath"])
             .Returns("/tmp/kubeconfig.yaml");
@@ -29,7 +42,7 @@ public class KubernetesServiceTest: IDisposable
         config.SkipTlsVerify = false;
 
         _testClient = new Kubernetes(config);
-        _kubernetesService = new KubernetesService(_mockConfiguration.Object, new ServiceDeploymentProvider());
+        _kubernetesService = new KubernetesService(_mockConfiguration.Object, new ServiceDeploymentProvider(), new DeploymentRepository(mongoContext));
     }
 
     public void Dispose()
@@ -143,6 +156,11 @@ public class KubernetesServiceTest: IDisposable
         Assert.Contains(22, deploymentDefinition.DeploymentOpenedPorts);
         await EnsureDeploymentCreated(deploymentDefinition.DeploymentName);
         
+        // Check MongoDb
+        var list = await _deploymentCollection.AsQueryable().ToListAsync();
+        Assert.Single(list);
+        Assert.Equal(userId, list[0].UserId);
+
         // Check service object created
         var serviceList = await _testClient.ListNamespacedServiceWithHttpMessagesAsync(userId);
         Assert.NotNull(serviceList);
@@ -167,5 +185,26 @@ public class KubernetesServiceTest: IDisposable
         
         // Check
         await EnsureDeploymentDeleted(definition.DeploymentName);
+    }
+
+    [Fact(DisplayName = "GetUserDeployment: GetUserDeployment should return list of deployments well.")]
+    public async void Is_GetUserDeployment_Creates_Deployment_Well()
+    {
+        // Let
+        var testId = "testId";
+        var definition = new DeploymentDefinition
+        {
+            UserId = testId,
+            DeploymentName = "TestName"
+        };
+        await _deploymentCollection.InsertOneAsync(definition);
+        
+        // Do
+        var list = await _deploymentCollection.AsQueryable().ToListAsync();
+        
+        // Check
+        Assert.Single(list);
+        Assert.Equal(testId, list[0].UserId);
+        Assert.Equal(definition.DeploymentName, list[0].DeploymentName);
     }
 }

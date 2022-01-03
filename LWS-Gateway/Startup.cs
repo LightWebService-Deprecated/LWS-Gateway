@@ -37,6 +37,7 @@ namespace LWS_Gateway
             services.AddScoped<UserService>();
             services.AddScoped<IKubernetesService, KubernetesService>();
             services.AddSingleton<ServiceDeploymentProvider>();
+            services.AddSingleton<IDeploymentRepository, DeploymentRepository>();
             
             services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());
             services.AddSwaggerGen(c =>

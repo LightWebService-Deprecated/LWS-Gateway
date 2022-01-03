@@ -9,6 +9,7 @@ using LWS_Gateway.Model.Request;
 using LWS_GatewayIntegrationTest.Extension;
 using LWS_GatewayIntegrationTest.Integration;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -195,5 +196,19 @@ public class DeploymentControllerTest : IDisposable
         
         // Check
         Assert.Equal(StatusCodes.Status401Unauthorized, (int)deleteResponse.StatusCode);
+    }
+
+    [Fact(DisplayName = "GET /api/v1/deployment should return list of deployments with 200 OK.")]
+    public async void Is_GetDeployment_Returns_200_With_Lists()
+    {
+        // Let
+        var accessToken = await CreateRandomUserAsync();
+        _httpClient.AddAuthToken(accessToken);
+        
+        // Do
+        var result = await _httpClient.GetAsync("/api/v1/deployment");
+        
+        // Check
+        Assert.Equal(StatusCodes.Status200OK, (int)result.StatusCode);
     }
 }

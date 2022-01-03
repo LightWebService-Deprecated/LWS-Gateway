@@ -112,6 +112,7 @@ public class UbuntuDeployment: IServiceDeployment
         
         return new DeploymentDefinition
         {
+            UserId = userId,
             ServiceName = service.Metadata.Name,
             DeploymentName = deployment.Metadata.Name,
             DeploymentType = DeploymentType.Ubuntu,

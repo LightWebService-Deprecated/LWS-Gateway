@@ -19,6 +19,14 @@ public class DeploymentController: ControllerBase
         _kubernetesService = kubernetesService;
     }
 
+    [HttpGet]
+    [AuthenticationNeeded(TargetRole = AccountRole.User)]
+    public async Task<IActionResult> GetUserDeployment()
+    {
+        var userId = HttpContext.GetUserId();
+        return Ok(await _kubernetesService.GetUserDeployment(userId));
+    }
+
     [HttpPost]
     [AuthenticationNeeded(TargetRole = AccountRole.User)]
     public async Task<IActionResult> CreateDeployment(DeploymentCreationRequest request)

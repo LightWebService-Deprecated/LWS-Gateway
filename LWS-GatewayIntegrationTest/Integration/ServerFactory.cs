@@ -30,7 +30,7 @@ public class ServerFactory: WebApplicationFactory<Startup>
         mockConfiguration.Setup(a => a["KubePath"])
             .Returns("/tmp/kubeconfig.yaml");
 
-        KubernetesService = new KubernetesService(mockConfiguration.Object, new ServiceDeploymentProvider());
+        KubernetesService = new KubernetesService(mockConfiguration.Object, new ServiceDeploymentProvider(), new DeploymentRepository(IntegrationMongoContext));
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
