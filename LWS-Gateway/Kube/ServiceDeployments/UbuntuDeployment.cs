@@ -83,7 +83,7 @@ public class UbuntuDeployment: IServiceDeployment
             },
             Selector = new Dictionary<string, string>
             {
-                ["deploymentIdentifier"] = deployment.Metadata.Labels["deploymentIdentifier"]
+                ["name"] = deployment.Spec.Selector.MatchLabels["name"]
             },
             Type = "NodePort"
         }
