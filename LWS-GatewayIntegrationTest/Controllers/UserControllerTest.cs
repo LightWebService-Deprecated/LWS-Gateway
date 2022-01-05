@@ -95,14 +95,14 @@ public class UserControllerTest: IDisposable
         var account = new Account
         {
             UserEmail = "test",
-            UserPassword = "testPassword",
+            UserPassword = BCrypt.Net.BCrypt.HashPassword("testPassword"),
             UserAccessTokens = new List<AccessToken>()
         };
         await _mongoCollection.InsertOneAsync(account);
         var loginRequest = new LoginRequest()
         {
             UserEmail = account.UserEmail,
-            UserPassword = account.UserPassword
+            UserPassword = "testPassword"
         };
         
         // Do

@@ -141,7 +141,7 @@ public class UserServiceTest
         var account = new Account
         {
             UserEmail = "test",
-            UserPassword = "testPassword",
+            UserPassword = BCrypt.Net.BCrypt.HashPassword("testPassword"),
             UserAccessTokens = new List<AccessToken>()
         };
         _mockAccountRepository.Setup(a => a.LoginAccountAsync(It.IsAny<LoginRequest>()))
@@ -161,6 +161,31 @@ public class UserServiceTest
         Assert.NotNull(accessToken);
         _mockAccountRepository.Verify(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
     }
+
+    [Fact(DisplayName =
+        "LoginRequest: LoginRequest should throw api server exception when id is correct but password is wrong.")]
+    public async void Is_LoginRequest_Throws_ApiServerException_When_Password_Wrong()
+    {
+        // Let
+        var account = new Account
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword",
+            UserAccessTokens = new List<AccessToken>()
+        };
+        _mockAccountRepository.Setup(a => a.LoginAccountAsync(It.IsAny<LoginRequest>()))
+            .ReturnsAsync(account);
+        _mockAccountRepository.Setup(a => a.SaveAccessTokenAsync(account.UserEmail, It.IsAny<AccessToken>()));
+        
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "test",
+            UserPassword = "testPassword"
+        };
+        
+        // Check
+        await Assert.ThrowsAsync<ApiServerException>(() => _userService.LoginRequest(loginRequest));
+    }
     
     [Fact(DisplayName =
         "LoginRequest: LoginRequest should return previously-used token if non-expired token already exists.")]
@@ -170,7 +195,7 @@ public class UserServiceTest
         var account = new Account
         {
             UserEmail = "test",
-            UserPassword = "testPassword",
+            UserPassword = BCrypt.Net.BCrypt.HashPassword("testPassword"),
             UserAccessTokens = new List<AccessToken>
             {
                 new()

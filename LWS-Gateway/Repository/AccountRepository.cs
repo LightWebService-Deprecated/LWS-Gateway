@@ -85,8 +85,7 @@ namespace LWS_Gateway.Repository
         public async Task<Account> LoginAccountAsync(LoginRequest message)
         {
             var findOptions = Builders<Account>.Filter.And(
-                Builders<Account>.Filter.Eq(a => a.UserEmail, message.UserEmail),
-                Builders<Account>.Filter.Eq(a => a.UserPassword, message.UserPassword)
+                Builders<Account>.Filter.Eq(a => a.UserEmail, message.UserEmail)
             );
 
             return await (await _accountCollection.FindAsync(findOptions)).FirstOrDefaultAsync();

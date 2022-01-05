@@ -41,6 +41,7 @@ namespace LWS_Gateway.Service
         {
             try
             {
+                request.UserPassword = BCrypt.Net.BCrypt.HashPassword(request.UserPassword);
                 var user = await _accountRepository.CreateAccountAsync(request);
                 await _kubernetesService.CreateNameSpace(user.Id);
             }
@@ -55,12 +56,31 @@ namespace LWS_Gateway.Service
             var loginResult = await _accountRepository.LoginAccountAsync(request)
                 ?? throw new ApiServerException(StatusCodes.Status401Unauthorized,
                     "Login failed! Please enter credential again.");
+                    
+            if (!CheckPasswordCorrect(request.UserPassword, loginResult.UserPassword))
+            {
+                throw new ApiServerException(StatusCodes.Status401Unauthorized,
+                    "Login failed! Please enter credential again.");
+            }
 
             var accessToken = CreateAccessToken(loginResult);
 
             await _accountRepository.SaveAccessTokenAsync(loginResult.UserEmail, accessToken);
 
             return accessToken;
+        }
+
+        [ExcludeFromCodeCoverage]
+        private bool CheckPasswordCorrect(string plainPassword, string hashedPassword)
+        {
+            bool correct = false;
+            try
+            {
+                correct = BCrypt.Net.BCrypt.Verify(plainPassword, hashedPassword);
+            } catch {}
+            
+
+            return correct;
         }
 
         public async Task DropoutUserRequest(string userId)
