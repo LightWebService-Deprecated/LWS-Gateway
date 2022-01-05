@@ -24,7 +24,7 @@ public class KubernetesService : IKubernetesService
     private readonly ServiceDeploymentProvider _serviceDeploymentProvider;
     private readonly IDeploymentRepository _deploymentRepository;
 
-    public KubernetesService(IConfiguration configuration, ServiceDeploymentProvider deploymentProvider, DeploymentRepository deploymentRepository)
+    public KubernetesService(IConfiguration configuration, ServiceDeploymentProvider deploymentProvider, IDeploymentRepository deploymentRepository)
     {
         var config = KubernetesClientConfiguration.BuildConfigFromConfigFile(configuration["KubePath"]);
         _client = new Kubernetes(config);
