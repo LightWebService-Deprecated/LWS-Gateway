@@ -54,11 +54,12 @@ jobs:
     needs: [RunUnitTests, RunIntegrationTest]
     runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
-    strategy:
-      matrix:
-        image-version: [ '1.0.4' ]
     steps:
       - uses: actions/checkout@v2
+
+      - name: Get LWS Version
+        id: lws
+        run: echo ::set-output name=version::$(cat ./LWS_VERSION)
       
       - name: Setting up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -68,4 +69,4 @@ jobs:
       - name: Build Image
         run: |
           docker login --username ${{secrets.DOCKER_USERNAME}} --password ${{secrets.DOCKER_USERPASSWORD}}
-          docker buildx build -f LWS-Gateway/Dockerfile --platform linux/amd64,linux/arm64 -t kangdroid/lws-gateway:${{ matrix.image-version }} --push .
+          docker buildx build -f LWS-Gateway/Dockerfile --platform linux/amd64,linux/arm64 -t kangdroid/lws-gateway:${{ steps.lws.outputs.version }} --push .
