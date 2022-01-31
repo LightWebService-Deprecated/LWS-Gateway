@@ -27,6 +27,7 @@ namespace LWS_Gateway.Model
         /// <summary>
         /// User's Password Information. Note this should be encrypted.
         /// </summary>
+        [BsonElement("userPassword")]
         public string UserPassword { get; set; } // TODO: Need to be encrypted.
         
         /// <summary>
@@ -35,6 +36,7 @@ namespace LWS_Gateway.Model
         [BsonElement("userAccessTokens")]
         public List<AccessToken> UserAccessTokens { get; set; }
 
+        [BsonElement("accountRoles")]
         public HashSet<AccountRole> AccountRoles { get; set; } = new() {AccountRole.User};
 
         public AccountProjection ToProjection() => new AccountProjection
