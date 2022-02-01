@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using LWS_Gateway.Attribute;
+using LWS_Gateway.Model;
 using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,6 +23,7 @@ public class AdminKubeController: ControllerBase
     }
     
     [HttpDelete]
+    [AuthenticationNeeded(TargetRole = AccountRole.Admin)]
     public async Task<IActionResult> RemoveUserClusterAsync(string userId)
     {
         _logger.LogInformation("Removing cluster for user: {userId}", userId);
