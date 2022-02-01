@@ -6,8 +6,10 @@ using LWS_Gateway.Middleware;
 using LWS_Gateway.Repository;
 using LWS_Gateway.Service;
 using LWS_Gateway.Swagger;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +32,9 @@ namespace LWS_Gateway
         {
             // MongoDB Configuration
             services.AddSingleton(Configuration.GetSection("MongoConfiguration").Get<MongoConfiguration>());
+            
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => { options.LoginPath = "/account/login"; });
             
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
@@ -63,6 +68,14 @@ namespace LWS_Gateway
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict
+            });
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseMiddleware<AuthenticationMiddleware>();
 
