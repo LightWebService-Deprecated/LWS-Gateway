@@ -38,7 +38,8 @@ namespace LWS_Gateway
             services.AddScoped<IKubernetesService, KubernetesService>();
             services.AddSingleton<ServiceDeploymentProvider>();
             services.AddSingleton<IDeploymentRepository, DeploymentRepository>();
-            
+
+            services.AddControllersWithViews();
             services.AddControllers(option => option.Filters.Add<CustomExceptionFilter>());
             services.AddSwaggerGen(c =>
             {
@@ -58,6 +59,8 @@ namespace LWS_Gateway
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 

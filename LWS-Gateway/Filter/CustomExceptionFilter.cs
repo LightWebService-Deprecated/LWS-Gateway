@@ -55,7 +55,7 @@ namespace LWS_Gateway.Filter
                 var errorResponse = new ErrorResponse
                 {
                     StatusCodes = StatusCodes.Status500InternalServerError,
-                    Message = "Unknown Error Occurred!",
+                    Message = $"Unknown Error Occurred: {context.Exception.Message}",
                     DetailedMessage = context.Exception.StackTrace,
                     ErrorPath = context.HttpContext.Request.Path.Value
                 };

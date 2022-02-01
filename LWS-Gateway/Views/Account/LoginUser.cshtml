@@ -1,0 +1,132 @@
+@model dynamic
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Ubuntu+Mono" />
+    <link rel="stylesheet" type="text/css" href="~/css/global.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/common_header.css" />
+
+    <style>
+        header {
+            width: 100%;
+            height: 6%;
+        }
+
+        /* Login Area Definition */
+        input {
+            display: block;
+            height: 30px;
+            font-size: 16px;
+        }
+
+        label {
+            color: rgb(100, 100, 100)
+        }
+
+        .login_root {
+            display: flex;
+            width: 100%;
+            height: 94%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login_area {
+            box-shadow: 1px 1px 5px 1px rgb(199, 199, 199);
+            border-radius: 10px;
+            width: 30%;
+            padding: 30px;
+            background-color: rgb(230, 230, 250);
+        }
+
+        .login_fieldset {
+            border: none;
+            padding: 0px 0px 15px 0px;
+            margin: 0;
+        }
+
+        .text_input {
+            width: 100%;
+        }
+
+        .input_button {
+            height: auto;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            float: right;
+            font-size: 16px;
+            background-color: rgb(200, 200, 250);
+        }
+
+        .input_button:active {
+            background-color: rgb(180, 180, 250);
+        }
+    </style>
+</head>
+
+<header>
+    <!-- Header Area -->
+    <div class="header" style="height: 100%;">
+        <!-- Header Name -->
+        <a href="/" class="header_name">Lightweight Web Service(Admin)</a>
+    </div>
+</header>
+
+<body>
+<!-- Body Area -->
+<div class="login_root">
+    <div class="login_area">
+        <h2>Login</h2>
+        <h3>Login to LWS Service</h3>
+        <form name="login_lws" id="lws_login">
+
+            <fieldset class="login_fieldset">
+                <label for="email_input">Email</label>
+                <input class="text_input" id="email_input" type="email" placeholder="Enter Email Address."
+                       for-id="email_description">
+            </fieldset>
+
+            <fieldset class="login_fieldset">
+                <label for="password_input">Password</label>
+                <input class="text_input" id="password_input" type="password" minlength="8"
+                       placeholder="Enter Password(8 length or more)">
+            </fieldset>
+        </form>
+        
+        <button class="input_button" onclick="loginLws()">Login</button>
+    </div>
+</div>
+</body>
+<footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+    function loginLws() {
+        let requestObject = {
+            "userEmail": document.getElementById("email_input").value,
+            "userPassword": document.getElementById("password_input").value
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/user/login',
+            contentType: 'application/json',
+            data: JSON.stringify(requestObject)
+        }).done(function() {
+            alert("Sucessfully Logged-In!")
+        }).fail(function(error) {
+            let errorString = JSON.stringify(error)
+            console.log(errorString)
+            alert("Failed to logging in: " + errorString)
+        })
+    }
+    </script>
+</footer>
+</html>
