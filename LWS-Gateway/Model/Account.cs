@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using LWS_Gateway.Model.Response;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -9,6 +11,7 @@ namespace LWS_Gateway.Model
     /// User model description. All about users!
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [BsonIgnoreExtraElements]
     public class Account
     {
         /// <summary>
@@ -44,6 +47,24 @@ namespace LWS_Gateway.Model
             UserEmail = this.UserEmail,
             AccountRoles = this.AccountRoles
         };
+
+        public AccountHeaderResponse ToViewHeaderResponse()
+        {
+            AccountRole role = AccountRole.User;
+
+            if (AccountRoles.Contains(AccountRole.Admin))
+            {
+                role = AccountRole.Admin;
+            }
+            
+            return new AccountHeaderResponse
+            {
+                Id = this.Id,
+                Email = this.UserEmail,
+                FirstLetter = this.UserEmail.First(),
+                Role = role
+            };
+        }
     }
 
     [ExcludeFromCodeCoverage]
