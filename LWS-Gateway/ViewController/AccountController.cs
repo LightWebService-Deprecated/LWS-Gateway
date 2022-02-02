@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LWS_Gateway.Model.Request;
@@ -48,7 +49,8 @@ public class AccountController: Controller
             {
                 new Claim("userId", account.Id),
                 new Claim("token", token.Token),
-                new Claim(ClaimTypes.Email, account.UserEmail)
+                new Claim(ClaimTypes.Email, account.UserEmail),
+                new Claim(ClaimTypes.Expiration, $"{DateTimeOffset.UtcNow.AddMinutes(9).ToUnixTimeMilliseconds()}")
             }
         , CookieAuthenticationDefaults.AuthenticationScheme);
 

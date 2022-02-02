@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using LWS_Gateway.Configuration;
 using LWS_Gateway.Filter;
@@ -32,9 +33,16 @@ namespace LWS_Gateway
         {
             // MongoDB Configuration
             services.AddSingleton(Configuration.GetSection("MongoConfiguration").Get<MongoConfiguration>());
+
+            services.AddSingleton<ValidateExpirationCookie>();
             
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => { options.LoginPath = "/account/login"; });
+                .AddCookie(options =>
+                {
+                    options.EventsType = typeof(ValidateExpirationCookie);
+                    options.LoginPath = "/account/login";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(9);
+                });
             
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IAccountRepository, AccountRepository>();
@@ -71,7 +79,7 @@ namespace LWS_Gateway
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                MinimumSameSitePolicy = SameSiteMode.Strict
+                MinimumSameSitePolicy = SameSiteMode.Strict,
             });
             
             app.UseAuthentication();
