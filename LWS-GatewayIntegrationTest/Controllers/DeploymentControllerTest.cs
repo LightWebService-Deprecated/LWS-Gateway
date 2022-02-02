@@ -166,6 +166,7 @@ public class DeploymentControllerTest : IDisposable
         // Do
         var deleteResponse = await _httpClient.SendAsync(new HttpRequestMessage
         {
+            RequestUri = new Uri("/api/v1/deployment"),
             Method = HttpMethod.Delete,
             Content = new StringContent(content: JsonConvert.SerializeObject(deleteRequest), Encoding.UTF8,
                 "application/json")
