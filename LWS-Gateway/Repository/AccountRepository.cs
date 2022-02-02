@@ -75,6 +75,7 @@ namespace LWS_Gateway.Repository
             {
                 UserEmail = message.UserEmail,
                 UserPassword = message.UserPassword,
+                UserNickName = message.UserNickName,
                 UserAccessTokens = new List<AccessToken>()
             };
             await _accountCollection.InsertOneAsync(account);

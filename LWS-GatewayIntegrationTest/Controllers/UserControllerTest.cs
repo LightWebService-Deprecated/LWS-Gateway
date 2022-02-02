@@ -51,7 +51,8 @@ public class UserControllerTest: IDisposable
         var registerRequest = new RegisterRequest
         {
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "testNickName"
         };
         
         // Do
@@ -70,7 +71,8 @@ public class UserControllerTest: IDisposable
         var account = new Account
         {
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "testNickName"
         };
         await _mongoCollection.InsertOneAsync(account);
         var registerRequest = new RegisterRequest

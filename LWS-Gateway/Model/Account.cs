@@ -5,72 +5,78 @@ using LWS_Gateway.Model.Response;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace LWS_Gateway.Model
+namespace LWS_Gateway.Model;
+
+/// <summary>
+/// User model description. All about users!
+/// </summary>
+[ExcludeFromCodeCoverage]
+[BsonIgnoreExtraElements]
+public class Account
 {
     /// <summary>
-    /// User model description. All about users!
+    /// Unique ID[Or Identifier] for Each User.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    [BsonIgnoreExtraElements]
-    public class Account
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
+    
+    /// <summary>
+    /// User's Email Address
+    /// </summary>
+    [BsonElement("userEmail")]
+    public string UserEmail { get; set; }
+    
+    /// <summary>
+    /// User's Nickname
+    /// </summary>
+    [BsonElement("userNickName")]
+    public string UserNickName { get; set; }
+
+    /// <summary>
+    /// User's Password Information. Note this should be encrypted.
+    /// </summary>
+    [BsonElement("userPassword")]
+    public string UserPassword { get; set; } // TODO: Need to be encrypted.
+    
+    /// <summary>
+    /// User Access Tokens
+    /// </summary>
+    [BsonElement("userAccessTokens")]
+    public List<AccessToken> UserAccessTokens { get; set; }
+
+    [BsonElement("accountRoles")]
+    public HashSet<AccountRole> AccountRoles { get; set; } = new() {AccountRole.User};
+
+    public AccountProjection ToProjection() => new AccountProjection
     {
-        /// <summary>
-        /// Unique ID[Or Identifier] for Each User.
-        /// </summary>
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-        
-        /// <summary>
-        /// User's Email Address
-        /// </summary>
-        [BsonElement("userEmail")]
-        public string UserEmail { get; set; }
+        UserEmail = this.UserEmail,
+        AccountRoles = this.AccountRoles
+    };
 
-        /// <summary>
-        /// User's Password Information. Note this should be encrypted.
-        /// </summary>
-        [BsonElement("userPassword")]
-        public string UserPassword { get; set; } // TODO: Need to be encrypted.
-        
-        /// <summary>
-        /// User Access Tokens
-        /// </summary>
-        [BsonElement("userAccessTokens")]
-        public List<AccessToken> UserAccessTokens { get; set; }
+    public AccountHeaderResponse ToViewHeaderResponse()
+    {
+        AccountRole role = AccountRole.User;
 
-        [BsonElement("accountRoles")]
-        public HashSet<AccountRole> AccountRoles { get; set; } = new() {AccountRole.User};
-
-        public AccountProjection ToProjection() => new AccountProjection
+        if (AccountRoles.Contains(AccountRole.Admin))
         {
-            UserEmail = this.UserEmail,
-            AccountRoles = this.AccountRoles
-        };
-
-        public AccountHeaderResponse ToViewHeaderResponse()
-        {
-            AccountRole role = AccountRole.User;
-
-            if (AccountRoles.Contains(AccountRole.Admin))
-            {
-                role = AccountRole.Admin;
-            }
-            
-            return new AccountHeaderResponse
-            {
-                Id = this.Id,
-                Email = this.UserEmail,
-                FirstLetter = this.UserEmail.First(),
-                Role = role
-            };
+            role = AccountRole.Admin;
         }
+        
+        return new AccountHeaderResponse
+        {
+            Id = this.Id,
+            NickName = this.UserNickName,
+            Email = this.UserEmail,
+            FirstLetter = this.UserEmail.First(),
+            Role = role
+        };
     }
+}
 
-    [ExcludeFromCodeCoverage]
-    public class AccountProjection
-    {
-        public string UserEmail { get; set; }
-        public HashSet<AccountRole> AccountRoles { get; set; }
-    }
+[ExcludeFromCodeCoverage]
+public class AccountProjection
+{
+    public string UserEmail { get; set; }
+    public HashSet<AccountRole> AccountRoles { get; set; }
 }

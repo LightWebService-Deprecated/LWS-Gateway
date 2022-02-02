@@ -51,7 +51,8 @@ public class UserServiceTest
         var registerRequest = new RegisterRequest
         {
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "kangdroid"
         };
         
         // Do
@@ -67,7 +68,8 @@ public class UserServiceTest
         var registerRequest = new RegisterRequest
         {
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "kangdroid"
         };
         
         // Do
@@ -83,7 +85,8 @@ public class UserServiceTest
         var registerRequest = new RegisterRequest
         {
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "kangdroid"
         };
         
         // Do
@@ -98,13 +101,15 @@ public class UserServiceTest
         {
             Id = Guid.NewGuid().ToString(),
             UserEmail = "test",
-            UserPassword = "testPassword"
+            UserPassword = "testPassword",
+            UserNickName = "kangdroid"
         };
         
         var registerRequest = new RegisterRequest
         {
             UserEmail = user.UserEmail,
-            UserPassword = user.UserPassword
+            UserPassword = user.UserPassword,
+            UserNickName = "kangdroid"
         };
         _mockAccountRepository.Setup(a => a.CreateAccountAsync(It.IsAny<RegisterRequest>()))
             .ReturnsAsync(user);
