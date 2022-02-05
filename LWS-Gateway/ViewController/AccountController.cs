@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LWS_Gateway.Model.Request;
@@ -31,6 +32,16 @@ public class AccountController: Controller
     public IActionResult RegisterUser()
     {
         return View("Registration");
+    }
+
+    [HttpGet("info")]
+    public async Task<IActionResult> AccountSettingsPage()
+    {
+        var token = HttpContext.User.Claims.First(a => a.Type == "token")
+            .Value;
+        var account = await _authenticationService.AuthenticateUserRequest(new AuthenticationRequest {UserToken = token});
+
+        return View("AccountInfoEdit", account.ToViewHeaderResponse());
     }
 
     [HttpPost("login")]

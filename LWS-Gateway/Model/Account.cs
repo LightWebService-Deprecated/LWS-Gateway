@@ -68,7 +68,7 @@ public class Account
             Id = this.Id,
             NickName = this.UserNickName,
             Email = this.UserEmail,
-            FirstLetter = this.UserEmail.First(),
+            FirstLetter = this.UserNickName.First(),
             Role = role
         };
     }
