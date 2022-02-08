@@ -1,3 +1,4 @@
+@using AutoMapper.Internal
 @model dynamic
 
 @{
@@ -51,6 +52,15 @@
             margin: 0;
         }
 
+        .login_fieldset a {
+            display: none;
+        }
+
+        .error a {
+            display: inline;
+            color: #EF5350;
+        }
+
         .text_input {
             width: 100%;
         }
@@ -81,59 +91,31 @@
 </header>
 
 <body>
-<!-- Body Area -->
-<div class="login_root">
-    <div class="login_area">
-        <h2>Login</h2>
-        <h3>Login to LWS Service</h3>
-        <form name="login_lws" id="lws_login">
+    <!-- Body Area -->
+    <div class="login_root">
+        <div class="login_area">
+            <h2>Login</h2>
+            <h3>Login to LWS Service</h3>
+            <form name="login_lws" id="lws_login" action="/account/login" , method="post">
 
-            <fieldset class="login_fieldset">
-                <label for="email_input">Email</label>
-                <input class="text_input" id="email_input" type="email" placeholder="Enter Email Address."
-                       for-id="email_description">
-            </fieldset>
+                <fieldset class="login_fieldset @((ViewBag?.Error == true) ? "error" : "")">
+                    <label>Email</label>
+                    <input class="text_input" type="email" placeholder="Enter Email Address." name="userEmail">
+                    <a class="validation-message">Please check email address again!</a>
+                </fieldset>
 
-            <fieldset class="login_fieldset">
-                <label for="password_input">Password</label>
-                <input class="text_input" id="password_input" type="password" minlength="8"
-                       placeholder="Enter Password(8 length or more)">
-            </fieldset>
-        </form>
-        
-        <button class="input_button" onclick="loginLws()">Login</button>
+                <fieldset class="login_fieldset @(((ViewBag?.Error == true)) ? "error" : "")">
+                    <label>Password</label>
+                    <input class="text_input" type="password" minlength="8"
+                        placeholder="Enter Password(8 length or more)" name="userPassword">
+                    <a class="validation-message">Please check password again!</a>
+                </fieldset>
+
+                <input class="input_button" type="submit" value="Login" />
+            </form>
+        </div>
     </div>
-</div>
 </body>
 <footer>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-    function loginLws() {
-        let requestObject = {
-            "userEmail": document.getElementById("email_input").value,
-            "userPassword": document.getElementById("password_input").value
-        }
-
-        $.ajax({
-            type: 'POST',
-            url: '/account/login',
-            contentType: 'application/json',
-            data: JSON.stringify(requestObject),
-            statusCode: {
-                200: function () {
-                    window.location.href = '@ViewData["destinationUrl"]'
-                },
-                401: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Login Failed!',
-                        text: 'Login failed, please try again!'
-                    })
-                }
-            }
-        })
-    }
-    </script>
 </footer>
 </html>

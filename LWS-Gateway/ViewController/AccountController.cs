@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LWS_Gateway.CustomException;
+using LWS_Gateway.Model;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -26,14 +28,6 @@ public class AccountController: Controller
     [HttpGet("login")]
     public IActionResult LoginUser(string returnUrl)
     {
-        if (string.IsNullOrEmpty(returnUrl))
-        {
-            ViewData["destinationUrl"] = "/";
-        }
-        else
-        {
-            ViewData["destinationUrl"] = returnUrl;
-        }
         return View();
     }
 
@@ -55,10 +49,16 @@ public class AccountController: Controller
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> LoginFromViewAsync([FromBody] LoginRequest loginRequest)
+    public async Task<IActionResult> LoginFromViewAsync(LoginRequest loginRequest, [FromQuery] string returnUrl)
     {
         // Login
-        var token = await _userService.LoginRequest(loginRequest);
+        var token = await GetTokenFromLogin(loginRequest);
+
+        if (token == null)
+        {
+            ViewBag.Error = true;
+            return View("LoginUser");
+        }
         
         // Get Account
         var account =
@@ -77,6 +77,26 @@ public class AccountController: Controller
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
-        return Ok();
+        if (string.IsNullOrEmpty(returnUrl))
+        {
+            return RedirectToAction("Index", "Index");
+        }
+        
+        return Redirect(returnUrl);
+    }
+
+    private async Task<AccessToken> GetTokenFromLogin(LoginRequest loginRequest)
+    {
+        AccessToken token = default(AccessToken);
+        try
+        {
+            token = await _userService.LoginRequest(loginRequest);
+        }
+        catch (ApiServerException exception)
+        {
+            // Failed
+        }
+
+        return token;
     }
 }
