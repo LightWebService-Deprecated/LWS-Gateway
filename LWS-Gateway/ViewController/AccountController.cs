@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LWS_Gateway.Model.Request;
 using LWS_Gateway.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions;
 
@@ -34,13 +35,14 @@ public class AccountController: Controller
         return View("Registration");
     }
 
+    [Authorize]
     [HttpGet("info")]
     public async Task<IActionResult> AccountSettingsPage()
     {
         var token = HttpContext.User.Claims.First(a => a.Type == "token")
             .Value;
         var account = await _authenticationService.AuthenticateUserRequest(new AuthenticationRequest {UserToken = token});
-
+        
         return View("AccountInfoEdit", account.ToViewHeaderResponse());
     }
 
