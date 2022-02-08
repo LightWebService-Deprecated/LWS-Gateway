@@ -24,8 +24,16 @@ public class AccountController: Controller
     }
 
     [HttpGet("login")]
-    public IActionResult LoginUser()
+    public IActionResult LoginUser(string returnUrl)
     {
+        if (string.IsNullOrEmpty(returnUrl))
+        {
+            ViewData["destinationUrl"] = "/";
+        }
+        else
+        {
+            ViewData["destinationUrl"] = returnUrl;
+        }
         return View();
     }
 

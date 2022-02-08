@@ -107,6 +107,7 @@
 </body>
 <footer>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     function loginLws() {
         let requestObject = {
@@ -118,13 +119,19 @@
             type: 'POST',
             url: '/account/login',
             contentType: 'application/json',
-            data: JSON.stringify(requestObject)
-        }).done(function() {
-            alert("Sucessfully Logged-In!")
-        }).fail(function(error) {
-            let errorString = JSON.stringify(error)
-            console.log(errorString)
-            alert("Failed to logging in: " + errorString)
+            data: JSON.stringify(requestObject),
+            statusCode: {
+                200: function () {
+                    window.location.href = '@ViewData["destinationUrl"]'
+                },
+                401: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed!',
+                        text: 'Login failed, please try again!'
+                    })
+                }
+            }
         })
     }
     </script>
